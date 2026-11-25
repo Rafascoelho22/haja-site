@@ -21,7 +21,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # O index.html é escrito sem <!doctype>/<html> para também servir de Artifact no Claude.
       # Aqui ele ganha o cabeçalho de documento completo antes de ir para o ar.
@@ -31,9 +31,9 @@ jobs:
           cp -r site/. _site/
           { echo '<!doctype html>'; echo '<html lang="pt-BR">'; cat site/index.html; echo '</html>'; } > _site/index.html
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
