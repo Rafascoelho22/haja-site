@@ -1,0 +1,16 @@
+# links assinados do CDN do Instagram (expiram e trazem tokens)
+img/ig/urls.txt
+
+# arquivos temporários dos geradores
+figcraft/script.jsonl
+figcraft/run.log
+figcraft/t.*
+*.log
+
+# capturas de tela soltas
+Captura de tela*.png
+
+# sistema
+Thumbs.db
+desktop.ini
+.DS_Store
