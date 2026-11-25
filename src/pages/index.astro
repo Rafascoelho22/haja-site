@@ -1,0 +1,161 @@
+---
+import Base from '../layouts/Base.astro';
+import Reel from '../components/Reel.astro';
+import FundoLogo from '../components/FundoLogo.astro';
+import { getReels, getSite, url, whatsapp } from '../lib/site';
+
+const site = await getSite();
+const reels = await getReels();
+const ig = site.instagram;
+const porCategoria = (c: string) => reels.filter((r) => r.data.categoria === c);
+
+// abertura: até 5 destaques, o mais forte no centro
+const destaques = reels.filter((r) => r.data.destaque).slice(0, 5);
+const leque = destaques.length === 5 ? [destaques[1], destaques[2], destaques[0], destaques[3], destaques[4]] : destaques;
+
+const capitulos = [
+  { cat: 'ao-vivo', tag: 'Gravação ao vivo', titulo: 'Louvor com a emoção de um palco.', texto: 'Várias câmeras, áudio multipista e luz desenhada para o momento. O ministro canta, a gente cuida do resto.' },
+  { cat: 'sessions', tag: 'Sessions acústicas', titulo: 'Fundo de cor, voz em primeiro plano.', texto: 'Cenários intimistas em laranja, azul e verde. Cada session sai pronta para o feed vertical, com corte e legenda.' },
+  { cat: 'bastidores', tag: 'Bastidores', titulo: 'O processo também conta a história.', texto: 'Monitor, banda, câmera e equipe. Mostrar como se faz aproxima o público de quem está cantando.' },
+  { cat: 'entrevistas', tag: 'Entrevistas e testemunhos', titulo: 'Histórias com luz de cinema.', texto: 'Cadeira, softbox e uma boa pergunta. Formatos de entrevista e podcast para quem tem algo a contar.' },
+  { cat: 'redes', tag: 'Conteúdo para redes', titulo: 'Pensado para o Reels desde o roteiro.', texto: 'Gancho nos primeiros segundos, legenda na tela e identidade da sua marca em cada vídeo.' },
+]
+  .map((c) => ({ ...c, reel: porCategoria(c.cat)[0] }))
+  .filter((c) => c.reel);
+
+const dayReels = [...porCategoria('haja-day'), ...porCategoria('bastidores')];
+const day = dayReels.length >= 3 ? [dayReels[1], dayReels[0], dayReels[2]] : dayReels;
+
+const servicos = [
+  { t: 'Produção musical', d: 'Gravação, mixagem e direção vocal.', href: 'som/' },
+  { t: 'Videoclipes', d: 'Roteiro, captação e edição.', href: 'portfolio/#ao-vivo' },
+  { t: 'Live sessions', d: 'Multicâmera com áudio de estúdio.', href: 'portfolio/#sessions' },
+  { t: 'Cobertura de eventos', d: 'Do culto ao festival.', href: 'haja-day/' },
+  { t: 'Entrevistas e podcasts', d: 'Histórias contadas com luz de cinema.', href: 'portfolio/#entrevistas' },
+  { t: 'Conteúdo para redes', d: 'Reels pensados para o feed vertical.', href: 'portfolio/#redes' },
+];
+---
+<Base>
+  <section class="hero" id="inicio">
+    <div class="wrap hero-texto">
+      <p class="eyebrow">Produções musicais · Audiovisual</p>
+      <h1>
+        <span class="letra-anim" style="animation-delay:.05s">Onde o</span>{' '}
+        <span class="letra-anim l" style="animation-delay:.18s">HAJA</span><br />
+        <span class="letra-anim" style="animation-delay:.32s">se torna</span>{' '}
+        <span class="letra-anim" style="animation-delay:.44s">realidade.</span>
+      </h1>
+      <p class="sub">Criatividade a serviço do Reino. Gravamos louvor, sessions e histórias com luz de cinema e som de estúdio.</p>
+      <div class="ctas">
+        <a class="btn btn-laranja" href={url('portfolio/')}>Ver portfólio</a>
+        <a class="btn btn-link" href={url('agendar/')}>Agendar uma gravação ›</a>
+      </div>
+    </div>
+    <div class="leque" id="leque">
+      {leque.map((r, i) => <Reel reel={r} instagram={ig} eager={i === 2} sizes="(max-width: 560px) 36vw, 260px" />)}
+    </div>
+  </section>
+
+  <section class="manifesto" id="manifesto" data-faixa-clara>
+    <div class="fixo">
+      <FundoLogo />
+      <div class="wrap">
+        <p class="eyebrow" style="margin-bottom:28px">Sobre a Haja</p>
+        <p class="frase" id="frase">Cada som. Cada take. Cada história contada com *excelência *e *propósito.</p>
+        <p class="apoio">A Haja Produções nasceu para dar voz a artistas, ministérios e igrejas que querem levar uma mensagem com qualidade de estúdio. Somos o braço brasileiro da @hajaproducoesglobal.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="producoes" id="producoes" data-faixa-clara>
+    <FundoLogo />
+    <div class="wrap">
+      <div class="producoes-cab rv">
+        <p class="eyebrow">O que a gente grava</p>
+        <h2>Do primeiro take ao último frame.</h2>
+      </div>
+      <div class="historia">
+        <div class="capitulos">
+          {capitulos.map((c, i) => (
+            <article class="capitulo" data-reel={i}>
+              <span class="tag">{c.tag}</span>
+              <h3>{c.titulo}</h3>
+              <p>{c.texto}</p>
+              <a class="mais" href={url(`portfolio/#${c.cat}`)}>Ver produções de {c.tag.toLowerCase()} ›</a>
+              <Reel reel={c.reel} instagram={ig} class="reel-inline" sizes="(max-width: 860px) 78vw, 1px" />
+            </article>
+          ))}
+        </div>
+        <aside class="lateral" aria-label="Reel do capítulo atual">
+          <div class="pilha" id="pilha">
+            {capitulos.map((c, i) => <Reel reel={c.reel} instagram={ig} class={i === 0 ? 'ativo' : ''} sizes="400px" />)}
+          </div>
+          <div class="pontos" id="pontos">{capitulos.map((_, i) => <span class={i === 0 ? 'ativo' : ''}></span>)}</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="galeria" id="galeria">
+    <div class="fixo">
+      <div class="wrap cab">
+        <h2>Produções recentes.</h2>
+        <a class="btn btn-link" href={url('portfolio/')}>Ver o portfólio completo ›</a>
+      </div>
+      <div class="trilho" id="trilho">
+        {reels.slice(0, 9).map((r) => <Reel reel={r} instagram={ig} sizes="(max-width: 860px) 66vw, 320px" />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="day" id="day">
+    <div class="wrap">
+      <div class="rv">
+        <p class="eyebrow">Haja Day</p>
+        <h2>Um dia inteiro <span>de criação.</span></h2>
+        <p>Já estamos na terceira edição. Artistas, câmeras, luz e som no mesmo lugar para produzir conteúdo de verdade, do ensaio ao vídeo publicado.</p>
+        <a class="btn btn-preto" href={url('haja-day/')}>Conhecer o Haja Day ›</a>
+      </div>
+      <div class="day-reels" id="dayReels">
+        {day.map((r) => <Reel reel={r} instagram={ig} sizes="(max-width: 860px) 56vw, 340px" />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="servicos" id="servicos" data-faixa-clara>
+    <FundoLogo />
+    <div class="wrap">
+      <h2 class="rv">O que fazemos.</h2>
+      <p class="intro rv">Um time para cuidar do som, da imagem e da história do seu ministério ou projeto.</p>
+      <div class="grade">
+        {servicos.map((s) => (
+          <a class="card rv" data-atraso href={url(s.href)}>
+            <svg viewBox="0 0 92 60"><use href="#chev" /></svg>
+            <h3>{s.t}</h3>
+            <p>{s.d}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="contato" id="contato">
+    <div class="wrap">
+      <svg class="simbolo rv" viewBox="0 0 92 60"><use href="#chev" /></svg>
+      <h2 class="rv">Vamos fazer HAJA.</h2>
+      <div class="dados rv">
+        <span>WhatsApp <b id="fone">{site.whatsappExibicao}</b></span>
+        <span>Instagram <b>@{site.instagram}</b></span>
+      </div>
+      <div class="ctas rv">
+        <a class="btn btn-laranja" href={url('agendar/')}>Agendar uma gravação</a>
+        <a class="btn copiar" href={whatsapp(site.whatsapp, 'Olá, Haja! Vim pelo site.')} target="_blank" rel="noopener">Chamar no WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { iniciarHome } from '../scripts/home';
+  iniciarHome();
+</script>

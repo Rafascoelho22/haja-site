@@ -14,3 +14,9 @@ Captura de tela*.png
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Astro
+node_modules/
+dist/
+.astro/
+img/tratadas/

@@ -7,19 +7,20 @@
 <p align="center">
   <a href="https://rafascoelho22.github.io/haja-site/"><strong>Ver o site no ar »</strong></a>
   &nbsp;·&nbsp;
-  <a href="#capturas-de-tela">Capturas de tela</a>
+  <a href="#editar-o-conteúdo-sem-código">Editar o conteúdo</a>
   &nbsp;·&nbsp;
-  <a href="#como-foi-feito">Como foi feito</a>
+  <a href="#capturas-de-tela">Capturas de tela</a>
   &nbsp;·&nbsp;
   <a href="https://www.instagram.com/hajaproducoesbrasil/">@hajaproducoesbrasil</a>
 </p>
 
 <p align="center">
   <a href="https://github.com/Rafascoelho22/haja-site/actions/workflows/pages.yml"><img alt="Deploy" src="https://github.com/Rafascoelho22/haja-site/actions/workflows/pages.yml/badge.svg"></a>
-  <img alt="HTML, CSS e JS puros" src="https://img.shields.io/badge/HTML%20%2B%20CSS%20%2B%20JS-sem%20dependências-0A0A0A?style=flat-square">
+  <img alt="Astro 7" src="https://img.shields.io/badge/Astro-7-0A0A0A?style=flat-square&logo=astro&logoColor=FF5A1F">
+  <img alt="Keystatic" src="https://img.shields.io/badge/CMS-Keystatic-0A0A0A?style=flat-square">
   <img alt="Design no FigCraft" src="https://img.shields.io/badge/design-FigCraft-FF5A1F?style=flat-square">
   <img alt="Imagens no PhotoCraft" src="https://img.shields.io/badge/imagens-PhotoCraft-FF5A1F?style=flat-square">
-  <img alt="Responsivo" src="https://img.shields.io/badge/responsivo-desktop%20%2B%20celular-1D1D1F?style=flat-square">
+  <img alt="Áudio no SoundCraft" src="https://img.shields.io/badge/áudio-SoundCraft-FF5A1F?style=flat-square">
 </p>
 
 ---
@@ -28,27 +29,44 @@
   <summary><strong>Sumário</strong></summary>
 
 1. [Sobre o projeto](#sobre-o-projeto)
-2. [Capturas de tela](#capturas-de-tela)
-3. [O que a página faz ao rolar](#o-que-a-página-faz-ao-rolar)
-4. [Identidade visual](#identidade-visual)
-5. [Como foi feito](#como-foi-feito)
-6. [Estrutura de pastas](#estrutura-de-pastas)
-7. [Rodar localmente](#rodar-localmente)
-8. [Próximos passos](#próximos-passos)
-9. [Créditos e direitos](#créditos-e-direitos)
+2. [Páginas](#páginas)
+3. [Capturas de tela](#capturas-de-tela)
+4. [Editar o conteúdo sem código](#editar-o-conteúdo-sem-código)
+5. [Configurações: agenda, Haja Day e métricas](#configurações-agenda-haja-day-e-métricas)
+6. [Domínio próprio](#domínio-próprio)
+7. [Como foi feito](#como-foi-feito)
+8. [Estrutura de pastas](#estrutura-de-pastas)
+9. [Rodar localmente](#rodar-localmente)
+10. [Próximos passos](#próximos-passos)
+11. [Créditos e direitos](#créditos-e-direitos)
 
 </details>
 
 ## Sobre o projeto
 
-Protótipo de site para a **Haja Produções Brasil**, produtora de música e audiovisual que trabalha com louvor ao vivo, sessions acústicas, entrevistas e conteúdo para redes.
+Site da **Haja Produções Brasil**, produtora de música e audiovisual que trabalha com louvor ao vivo, sessions acústicas, entrevistas e conteúdo para redes.
 
-A navegação segue a lógica das páginas de produto da Apple. A página vai se revelando conforme a pessoa rola, cada faixa conta uma parte da história e os vídeos aparecem do jeito que o público já conhece: **reels verticais no formato do Instagram**, ao lado do texto.
+A navegação segue a lógica das páginas de produto da Apple. A página vai se revelando conforme a pessoa rola, e os vídeos aparecem como o público já conhece: **reels verticais no formato do Instagram**, ao lado do texto.
 
-- **Uma página só**, sem framework e sem etapa de build: HTML, CSS e JavaScript puros.
-- **Preto e laranja** da marca, com faixas brancas para a página respirar.
-- **Pensada para o celular** desde o início: no celular, os conteúdos ficam centralizados e os reels viram um carrossel de deslizar.
-- **Acessível**: respeita a opção do sistema de reduzir animações, o foco do teclado fica visível e todo reel tem um rótulo para leitores de tela.
+- **Astro 7**: o site é gerado como páginas estáticas, rápido e hospedado de graça no GitHub Pages.
+- **Keystatic**: um painel para a equipe da Haja adicionar reels, faixas e edições do Haja Day sem mexer em código.
+- **Imagens otimizadas**: cada capa vira WebP em quatro tamanhos, e o navegador baixa só o que precisa (10 a 100 KB por capa).
+- **Transições suaves** entre páginas, com a View Transitions API nativa do navegador.
+- **Pensado para o celular**: conteúdo centralizado, menu próprio e botão de WhatsApp sempre à mão.
+- **SEO**: título e descrição por página, imagem de compartilhamento, sitemap e dados estruturados (schema.org).
+- **Acessível**: respeita a opção de reduzir animações, tem o atalho "Pular para o conteúdo", foco visível e rótulos em todos os reels e botões.
+
+<p align="right"><a href="#topo">voltar ao topo ↑</a></p>
+
+## Páginas
+
+| Página | O que tem |
+|---|---|
+| **[Início](https://rafascoelho22.github.io/haja-site/)** | Abertura com reels em leque, manifesto que acende palavra por palavra, capítulos com o reel fixo na lateral, galeria horizontal, Haja Day, serviços e contato. |
+| **[Portfólio](https://rafascoelho22.github.io/haja-site/portfolio/)** | Todos os reels, com filtro por tipo (louvor ao vivo, sessions, bastidores…). A grade se reorganiza com animação, e o filtro fica no link (`/portfolio/#sessions`). |
+| **[Som](https://rafascoelho22.github.io/haja-site/som/)** | Player de áudio com forma de onda ([wavesurfer.js](https://wavesurfer.xyz)). Toca uma faixa por vez, e a forma de onda só carrega quando aparece na tela. |
+| **[Haja Day](https://rafascoelho22.github.io/haja-site/haja-day/)** | Próxima edição com contagem regressiva e link de inscrição (ou "Quero ser avisado", enquanto não há data) e a lista das edições com os reels de cada uma. |
+| **[Agendar](https://rafascoelho22.github.io/haja-site/agendar/)** | Agenda do [Cal.com](https://cal.com) dentro do site, quando configurada. Sem ela, um formulário curto monta a mensagem e abre o WhatsApp. |
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
 
@@ -56,69 +74,82 @@ A navegação segue a lógica das páginas de produto da Apple. A página vai se
 
 | Desktop | Celular |
 |:--|:--:|
-| <img src="docs/desktop-hero.png" alt="Abertura do site no desktop" width="560"> | <img src="docs/mobile-hero.png" alt="Abertura do site no celular" width="200"> |
-| <img src="docs/desktop-producoes.png" alt="Seção Produções com o reel fixo na lateral" width="560"> | <img src="docs/mobile-producoes.png" alt="Seção Produções no celular, centralizada" width="200"> |
-| <img src="docs/desktop-day.png" alt="Faixa laranja do Haja Day" width="560"> | <img src="docs/mobile-day.png" alt="Haja Day no celular" width="200"> |
+| <img src="docs/desktop-inicio.png" alt="Página inicial no desktop" width="560"> | <img src="docs/mobile-inicio.png" alt="Página inicial no celular" width="200"> |
+| <img src="docs/desktop-portfolio.png" alt="Portfólio com filtros" width="560"> | <img src="docs/mobile-portfolio.png" alt="Portfólio no celular" width="200"> |
+| <img src="docs/desktop-som.png" alt="Página de som com o player" width="560"> | <img src="docs/mobile-som.png" alt="Player de áudio no celular" width="200"> |
+| <img src="docs/desktop-haja-day.png" alt="Página do Haja Day" width="560"> | <img src="docs/mobile-haja-day.png" alt="Haja Day no celular" width="200"> |
 
 <details>
-  <summary>Mais telas do desktop</summary>
+  <summary>Página de agendamento</summary>
 
-<img src="docs/desktop-manifesto.png" alt="Manifesto com o logo desfocado ao fundo" width="49%"> <img src="docs/desktop-galeria.png" alt="Galeria de reels" width="49%">
-<img src="docs/desktop-servicos.png" alt="Serviços" width="49%"> <img src="docs/desktop-contato.png" alt="Contato" width="49%">
+<img src="docs/desktop-agendar.png" alt="Formulário de agendamento pelo WhatsApp" width="100%">
 
 </details>
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
 
-## O que a página faz ao rolar
+## Editar o conteúdo sem código
 
-| Faixa | Fundo | Comportamento |
-|---|---|---|
-| **Abertura** | preto | O título entra palavra por palavra e os reels começam em leque, alinhando-se conforme a rolagem. |
-| **Manifesto** | branco | A frase acende palavra por palavra, com o fim em laranja. O logo `>>` desfocado fica ao fundo. |
-| **Produções** | cinza claro | O texto rola à esquerda e o **reel fica fixo na lateral**, trocando a cada capítulo, com indicador de progresso. |
-| **Produções recentes** | preto | A rolagem vertical move a fileira de reels para o lado. |
-| **Haja Day** | laranja | Três reels se abrem em leque quando a faixa entra na tela. |
-| **Serviços** | branco | Seis cartões aparecem em sequência. |
-| **Contato** | preto | Link para o WhatsApp e botão para copiar o número. |
+O conteúdo fica em arquivos dentro do próprio repositório e é editado pelo painel do **Keystatic**:
 
-A barra do menu é translúcida, troca de cor ao passar pelas faixas claras e mostra uma linha laranja com o progresso da leitura.
+```bash
+npm install        # só na primeira vez
+npm run dev
+# abra http://127.0.0.1:4321/keystatic
+```
+
+| No painel | O que muda no site |
+|---|---|
+| **Reels** | Título, legenda, categoria, capa vertical (9:16), código do reel no Instagram, data e se aparece na página inicial. |
+| **Faixas de áudio** | Título, artista, descrição e arquivo (mp3, wav ou flac). Desmarque "Faixa de demonstração" ao subir uma produção real. |
+| **Edições do Haja Day** | Número, data, resumo e os reels da edição. |
+| **Configurações do site** | WhatsApp, Instagram, agenda do Cal.com, próximo Haja Day e métricas. |
+
+Depois de salvar no painel, faça commit e push. O GitHub Actions publica o site sozinho em cerca de um minuto.
+
+> O código do reel é o trecho depois de `/reel/` no link do Instagram. Em `instagram.com/hajaproducoesbrasil/reel/Dco2mE6hD3h/`, o código é `Dco2mE6hD3h`.
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
 
-## Identidade visual
+## Configurações: agenda, Haja Day e métricas
 
-<img src="figcraft/png/Design system.png" alt="Design system da Haja: cores, tipografia e logo" width="100%">
+Tudo em **Configurações do site**, no painel (arquivo `src/content/site.yaml`):
 
-| Token | Cor | Uso |
-|---|---|---|
-| `--preto` | `#0A0A0A` | fundo principal, menu |
-| `--laranja` | `#FF5A1F` | marca, botões, destaques |
-| `--branco` | `#FFFFFF` | faixas de leitura |
-| `--cinza` | `#F5F5F7` | faixa de produções, cartões |
-| `--grafite` | `#1D1D1F` | texto sobre fundo claro |
+- **Agenda (Cal.com):** crie uma conta gratuita em cal.com, um tipo de evento (por exemplo, "Gravação no estúdio") e cole o link curto, como `haja-producoes/estudio`. A página Agendar passa a mostrar a agenda. Com o campo vazio, ela usa o formulário pelo WhatsApp.
+- **Próximo Haja Day:** com data e hora futuras, a página mostra a contagem regressiva. O link de inscrição pode ser um Google Forms ou um Tally. Sem data, aparece "Data em breve".
+- **Métricas:** escolha **Plausible** (informe o domínio do site) ou **Umami** (informe o Website ID). As duas respeitam a privacidade e dispensam aviso de cookies. Os cliques em links externos, como o WhatsApp, também entram na contagem.
 
-**Tipografia:** Montserrat Black nos títulos, por ser próxima do logotipo HAJA, e Inter no texto corrido.
+<p align="right"><a href="#topo">voltar ao topo ↑</a></p>
+
+## Domínio próprio
+
+1. Registre o domínio (ex.: `hajaproducoes.com.br` no registro.br).
+2. No provedor de DNS, crie um registro `CNAME` de `www` para `rafascoelho22.github.io` e os registros `A` do domínio principal para os IPs do GitHub Pages (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`).
+3. No GitHub: **Settings → Secrets and variables → Actions → Variables → New variable**, com nome `DOMINIO` e valor `hajaproducoes.com.br`.
+4. Rode o workflow de novo (aba **Actions → Publicar no GitHub Pages → Run workflow**). O site passa a usar a raiz do domínio, o `CNAME` é gerado e os links, o sitemap e a imagem de compartilhamento se ajustam sozinhos.
+5. Em **Settings → Pages**, marque **Enforce HTTPS**.
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
 
 ## Como foi feito
 
-O projeto foi produzido com a suíte **ArtCraft**, por linha de comando:
-
 ```mermaid
 flowchart LR
-  IG["Instagram<br/>@hajaproducoesbrasil"] -->|capas dos reels 360×640| PC["PhotoCraft<br/>ampliação 2× + nitidez"]
-  PC -->|720×1280| SITE["site/index.html"]
-  FC["FigCraft<br/>design desktop, mobile<br/>e design system"] -->|logo SVG, tokens| SITE
-  FC -->|banner.png| README["README"]
-  SITE -->|GitHub Actions| PAGES["GitHub Pages"]
+  IG["Instagram<br/>@hajaproducoesbrasil"] -->|capas 360×640| PC["PhotoCraft<br/>ampliação 2× + nitidez"]
+  PC -->|720×1280| CMS["Keystatic<br/>reels, faixas, edições"]
+  SC["SoundCraft<br/>faixa de demonstração"] --> CMS
+  FC["FigCraft<br/>design, banner,<br/>imagem de compartilhamento"] --> ASTRO
+  CMS --> ASTRO["Astro 7<br/>páginas estáticas + WebP"]
+  ASTRO -->|GitHub Actions| PAGES["GitHub Pages"]
 ```
 
-1. **FigCraft** (`figcraft/gerar.sh`): gera o arquivo `haja-site.figcraft` com a landing desktop (1440 px), a versão mobile (390 px) e o design system. O `banner.sh` monta o banner deste README.
-2. **PhotoCraft** (`scripts/melhorar-reels.sh`): amplia as capas dos reels de 360×640 para 720×1280 (reamostragem *preserve details*) e aplica *smart sharpen* com redução de ruído.
-3. **Site** (`site/index.html`): um único arquivo. A rolagem usa `IntersectionObserver` e `requestAnimationFrame`, sem nenhuma biblioteca.
-4. **Deploy** (`.github/workflows/pages.yml`): a cada push na `main`, o GitHub Actions publica a pasta `site/` no GitHub Pages.
+| Ferramenta | Onde | O que fez |
+|---|---|---|
+| **FigCraft** | `figcraft/gerar.sh`, `banner.sh`, `og.sh` | Design desktop e mobile, design system, banner deste README e a imagem de compartilhamento 1200×630. |
+| **PhotoCraft** | `scripts/melhorar-reels.sh` | Ampliou as capas de 360×640 para 720×1280 e aplicou *smart sharpen* com redução de ruído. Também cortou as capturas de celular deste README. |
+| **SoundCraft** | `som/gerar-demo.sh` | Compôs e mixou a faixa de demonstração do player (pad, arpejo, baixo e batida, 80 BPM) e exportou em FLAC normalizado. |
+| **Astro** | `src/` | Páginas, componentes, otimização de imagem e sitemap. |
+| **Keystatic** | `keystatic.config.ts` | Painel de conteúdo. Só roda no `npm run dev`, então o site publicado continua 100% estático. |
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
 
@@ -126,56 +157,65 @@ flowchart LR
 
 ```
 haja-site/
-├── site/                  # o site publicado
-│   ├── index.html
-│   └── img/
-│       ├── hd/            # capas dos reels tratadas no PhotoCraft
-│       ├── logo-haja.svg  # exportado do FigCraft
-│       └── perfil.jpg
-├── figcraft/              # arquivos de design
-│   ├── haja-site.figcraft
-│   ├── banner.figcraft
-│   ├── gerar.sh / banner.sh
-│   └── png/               # exportações dos quadros
-├── img/ig/                # capas originais baixadas do Instagram
-├── scripts/melhorar-reels.sh
-├── docs/                  # banner e capturas de tela deste README
+├── src/
+│   ├── pages/              # index, portfolio, som, haja-day, agendar, 404
+│   ├── layouts/Base.astro  # <head> com SEO, menu, rodapé, WhatsApp flutuante
+│   ├── components/         # Reel, FundoLogo, Icones
+│   ├── content/            # conteúdo editado pelo Keystatic (YAML)
+│   │   ├── reels/  faixas/  edicoes/
+│   │   └── site.yaml       # configurações
+│   ├── assets/reels/       # capas (otimizadas no build)
+│   ├── scripts/            # comportamentos de rolagem e menu
+│   └── styles/             # global.css + paginas.css
+├── public/                 # og.png, favicon, áudio, logo
+├── keystatic.config.ts
+├── astro.config.mjs
+├── figcraft/  som/  scripts/   # fontes do design, do áudio e das imagens
+├── img/ig/                 # capas originais baixadas do Instagram
+├── docs/                   # banner e capturas deste README
 └── .github/workflows/pages.yml
 ```
 
 ## Rodar localmente
 
-Não tem dependências. Basta abrir `site/index.html` no navegador ou, para simular o servidor:
+Precisa do [Node.js](https://nodejs.org) 22.23 ou mais novo.
 
 ```bash
-cd site
-python -m http.server 8000   # ou: npx serve
-# abra http://localhost:8000
+npm install
+npm run dev       # site + painel em http://127.0.0.1:4321 (painel em /keystatic)
+npm run build     # gera o site em dist/
+npm run preview   # serve dist/ em http://localhost:4321/haja-site/
 ```
 
-Para refazer o design ou as imagens (é preciso ter o ArtCraft instalado em `C:\Program Files\ArtCraft\`):
+Para refazer os arquivos da suíte ArtCraft (instalada em `C:\Program Files\ArtCraft\`):
 
 ```bash
-cd figcraft && bash gerar.sh && "/c/Program Files/ArtCraft/FigCraft/figcraft-cli.exe" run script.jsonl --out haja-site.figcraft
+cd figcraft && bash gerar.sh && bash banner.sh && bash og.sh && cd ..
 bash scripts/melhorar-reels.sh
+bash som/gerar-demo.sh
 ```
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
 
 ## Próximos passos
 
-- [x] Landing com revelação por rolagem
-- [x] Reels no formato Instagram com o reel fixo na lateral
-- [x] Versão mobile centralizada
-- [x] Capas tratadas no PhotoCraft
-- [ ] Trocar as capas pelos **arquivos de vídeo originais** (tocando em loop, sem som), para a qualidade máxima
-- [ ] Página própria do Haja Day, com agenda e inscrição
-- [ ] Portfólio filtrável por tipo de produção
-- [ ] Formulário de orçamento ligado ao WhatsApp
+- [x] Revelação por rolagem e reels no formato Instagram
+- [x] Astro + Keystatic, com a equipe editando sem código
+- [x] Portfólio filtrável
+- [x] Player de áudio com forma de onda
+- [x] Página do Haja Day com contagem regressiva
+- [x] Agendamento (Cal.com ou WhatsApp)
+- [x] SEO, sitemap, imagem de compartilhamento e métricas opcionais
+- [x] Preparado para domínio próprio
+- [ ] Trocar as capas pelos **vídeos originais**, tocando em loop, e abrir um player estilo Stories ao clicar
+- [ ] Subir as **produções musicais reais** no lugar da faixa de demonstração
+- [ ] Rolagem com inércia (Lenis) e animações com GSAP ScrollTrigger
+- [ ] Depoimentos de artistas e ministérios
 
 ## Créditos e direitos
 
-- Marca, logo, fotos e vídeos: **Haja Produções Brasil** ([@hajaproducoesbrasil](https://www.instagram.com/hajaproducoesbrasil/), [@hajaproducoesglobal](https://www.instagram.com/hajaproducoesglobal/)). Todos os direitos reservados. As imagens estão aqui apenas como conteúdo de referência do protótipo.
+- Marca, logo, fotos e vídeos: **Haja Produções Brasil** ([@hajaproducoesbrasil](https://www.instagram.com/hajaproducoesbrasil/), [@hajaproducoesglobal](https://www.instagram.com/hajaproducoesglobal/)). Todos os direitos reservados. As imagens estão aqui como conteúdo do site da própria Haja.
+- A faixa em `public/audio/faixa-de-demonstracao/` é um exemplo gerado no SoundCraft, não uma produção da Haja.
 - Fontes: [Montserrat](https://fonts.google.com/specimen/Montserrat) e [Inter](https://fonts.google.com/specimen/Inter), sob a SIL Open Font License.
 - Estrutura deste README inspirada em [Best-README-Template](https://github.com/othneildrew/Best-README-Template) e [awesome-readme](https://github.com/matiassingers/awesome-readme).
 

@@ -1,0 +1,90 @@
+---
+import { getCollection, getEntries } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Reel from '../components/Reel.astro';
+import { getSite, whatsapp } from '../lib/site';
+
+const site = await getSite();
+const proximo = site.proximoHajaDay;
+const temData = proximo.data && proximo.data.getTime() > Date.now();
+const dataFmt = temData
+  ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short', timeZone: 'America/Sao_Paulo' }).format(proximo.data!)
+  : null;
+const inscricao = proximo.inscricaoUrl || whatsapp(site.whatsapp, 'Olá, Haja! Quero participar do próximo Haja Day.');
+const avisar = whatsapp(site.whatsapp, 'Olá, Haja! Quero ser avisado(a) quando abrir o próximo Haja Day.');
+
+const edicoes = await Promise.all(
+  (await getCollection('edicoes'))
+    .sort((a, b) => b.data.numero - a.data.numero)
+    .map(async (e) => ({ ...e, reels: await getEntries(e.data.reels) })),
+);
+---
+<Base titulo="Haja Day" descricao="Haja Day: um dia inteiro de criação com artistas, câmeras, luz e som no mesmo lugar. Veja as edições e participe da próxima.">
+  <section class="day-topo">
+    <div class="wrap">
+      <p class="eyebrow">Haja Day</p>
+      <h1>Um dia inteiro <span>de criação.</span></h1>
+      <p class="lead">Artistas, câmeras, luz e som no mesmo lugar para produzir conteúdo de verdade, do ensaio ao vídeo publicado.</p>
+
+      <div class="proximo" id="proximo" data-alvo={temData ? proximo.data!.toISOString() : undefined}>
+        {temData ? (
+          <>
+            <p class="proximo-rotulo">Próxima edição</p>
+            <p class="proximo-data">{dataFmt}{proximo.local && ` · ${proximo.local}`}</p>
+            <div class="contagem" aria-label="Contagem regressiva">
+              <div><span data-u="d">--</span><small>dias</small></div>
+              <div><span data-u="h">--</span><small>horas</small></div>
+              <div><span data-u="m">--</span><small>min</small></div>
+              <div><span data-u="s">--</span><small>seg</small></div>
+            </div>
+            <a class="btn btn-preto" href={inscricao} target="_blank" rel="noopener">Quero participar</a>
+          </>
+        ) : (
+          <>
+            <p class="proximo-rotulo">Próxima edição</p>
+            <p class="proximo-data">Data em breve</p>
+            <p class="proximo-nota">Avisamos você pelo WhatsApp assim que as inscrições abrirem.</p>
+            <a class="btn btn-preto" href={avisar} target="_blank" rel="noopener">Quero ser avisado</a>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="pagina-clara edicoes" data-faixa-clara>
+    <div class="wrap">
+      <h2 class="rv">Edições.</h2>
+      {edicoes.map((e) => (
+        <article class="edicao rv">
+          <div class="edicao-num" aria-hidden="true">{e.data.numero}ª</div>
+          <div class="edicao-texto">
+            <h3>{e.data.titulo}</h3>
+            {e.data.data && <p class="edicao-data">{new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeZone: 'UTC' }).format(e.data.data)}</p>}
+            <p>{e.data.resumo}</p>
+          </div>
+          <div class="edicao-reels">
+            {e.reels.map((r) => <Reel reel={r} instagram={site.instagram} sizes="(max-width: 560px) 60vw, 240px" />)}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<script>
+  const caixa = document.getElementById('proximo')!;
+  const alvo = caixa.dataset.alvo ? new Date(caixa.dataset.alvo).getTime() : 0;
+  if (alvo) {
+    const campos = Object.fromEntries([...caixa.querySelectorAll<HTMLElement>('[data-u]')].map((el) => [el.dataset.u, el]));
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const tique = () => {
+      const falta = Math.max(0, alvo - Date.now()) / 1000;
+      campos.d.textContent = String(Math.floor(falta / 86400));
+      campos.h.textContent = pad(Math.floor((falta % 86400) / 3600));
+      campos.m.textContent = pad(Math.floor((falta % 3600) / 60));
+      campos.s.textContent = pad(Math.floor(falta % 60));
+    };
+    tique();
+    setInterval(tique, 1000);
+  }
+</script>

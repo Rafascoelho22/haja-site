@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { getSite, url, whatsapp } from '../lib/site';
+
+const site = await getSite();
+const faixas = (await getCollection('faixas')).sort((a, b) => a.data.ordem - b.data.ordem);
+---
+<Base titulo="Som" descricao="Produção musical da Haja: gravação, mixagem e direção vocal. Ouça as faixas.">
+  <section class="pagina-escura som">
+    <div class="wrap">
+      <header class="cab-pagina">
+        <p class="eyebrow">Produção musical</p>
+        <h1>Ouça o que a gente faz.</h1>
+        <p class="lead">Gravação, mixagem e direção vocal para louvor, sessions e projetos autorais.</p>
+      </header>
+
+      <ol class="faixas">
+        {faixas.map((f, i) => (
+          <li class="faixa rv" data-audio={f.data.audio ? url(f.data.audio) : undefined}>
+            <button class="faixa-play" type="button" aria-label={`Tocar ${f.data.titulo}`} disabled={!f.data.audio}>
+              <svg class="i-play"><use href="#i-play" /></svg>
+              <svg class="i-pausa"><use href="#i-pausa" /></svg>
+            </button>
+            <div class="faixa-info">
+              <p class="faixa-titulo">
+                <span class="faixa-num">{String(i + 1).padStart(2, '0')}</span>
+                {f.data.titulo}
+                {f.data.demonstracao && <span class="selo">Demonstração</span>}
+              </p>
+              <p class="faixa-artista">{f.data.artista}</p>
+              <div class="onda" aria-hidden="true"></div>
+              {f.data.descricao && <p class="faixa-desc">{f.data.descricao}</p>}
+            </div>
+            <span class="faixa-tempo" aria-live="off">0:00</span>
+          </li>
+        ))}
+      </ol>
+
+      <div class="som-cta rv">
+        <h2>Quer gravar a sua música?</h2>
+        <div class="ctas">
+          <a class="btn btn-laranja" href={url('agendar/')}>Agendar estúdio</a>
+          <a class="btn btn-link" href={whatsapp(site.whatsapp, 'Olá, Haja! Quero produzir uma música.')} target="_blank" rel="noopener">Conversar no WhatsApp ›</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import WaveSurfer from 'wavesurfer.js';
+
+  const faixas = [...document.querySelectorAll<HTMLLIElement>('.faixa[data-audio]')];
+  const players = new Map<HTMLLIElement, WaveSurfer>();
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+  function criar(li: HTMLLIElement) {
+    if (players.has(li)) return players.get(li)!;
+    const tempo = li.querySelector('.faixa-tempo')!;
+    const ws = WaveSurfer.create({
+      container: li.querySelector<HTMLElement>('.onda')!,
+      url: li.dataset.audio,
+      height: 56,
+      barWidth: 3,
+      barGap: 2,
+      barRadius: 3,
+      waveColor: '#3A3A3C',
+      progressColor: '#FF5A1F',
+      cursorWidth: 0,
+      normalize: true,
+    });
+    ws.on('ready', () => (tempo.textContent = fmt(ws.getDuration())));
+    ws.on('timeupdate', (t) => (tempo.textContent = fmt(t)));
+    ws.on('play', () => {
+      li.classList.add('tocando');
+      players.forEach((outro, el) => el !== li && outro.pause());
+    });
+    ws.on('pause', () => li.classList.remove('tocando'));
+    ws.on('finish', () => li.classList.remove('tocando'));
+    players.set(li, ws);
+    return ws;
+  }
+
+  // a forma de onda só carrega quando a faixa chega perto da tela
+  const io = new IntersectionObserver(
+    (es) => es.forEach((e) => {
+      if (e.isIntersecting) {
+        criar(e.target as HTMLLIElement);
+        io.unobserve(e.target);
+      }
+    }),
+    { rootMargin: '200px' },
+  );
+  faixas.forEach((li) => {
+    io.observe(li);
+    li.querySelector('.faixa-play')!.addEventListener('click', () => criar(li).playPause());
+  });
+</script>

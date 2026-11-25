@@ -1,0 +1,27 @@
+{
+  "name": "haja-site",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Site da Haja Produções: Astro + Keystatic",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "astro": "7.4.10",
+    "wavesurfer.js": "8.0.5",
+    "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@astrojs/node": "11.1.12",
+    "@astrojs/react": "7.1.7",
+    "@keystatic/astro": "6.0.0",
+    "@keystatic/core": "0.6.9",
+    "react": "19.1.10",
+    "react-dom": "19.1.10"
+  }
+}

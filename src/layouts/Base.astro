@@ -1,0 +1,145 @@
+---
+import '../styles/global.css';
+import '../styles/paginas.css';
+import Icones from '../components/Icones.astro';
+import { getSite, url, whatsapp } from '../lib/site';
+
+interface Props {
+  titulo?: string;
+  descricao?: string;
+  imagem?: string;
+  /** página inteira em fundo claro: a barra começa clara */
+  navClara?: boolean;
+}
+
+const site = await getSite();
+const {
+  titulo,
+  descricao = 'Haja Produções Brasil: produções musicais e audiovisual. Louvor ao vivo, sessions acústicas, bastidores, entrevistas e conteúdo para redes.',
+  imagem = 'og.png',
+  navClara = false,
+} = Astro.props;
+
+const nomeCompleto = titulo ? `${titulo} · Haja Produções` : 'Haja Produções';
+const canonica = new URL(Astro.url.pathname, Astro.site);
+const imagemAbs = new URL(url(imagem), Astro.site);
+const inicio = new URL(url(), Astro.site);
+const instagramUrl = `https://www.instagram.com/${site.instagram}/`;
+const caminho = Astro.url.pathname;
+const ativo = (p: string) => (p === '' ? caminho === url() : caminho.startsWith(url(p)));
+
+const links = [
+  { href: '', texto: 'Início' },
+  { href: 'portfolio/', texto: 'Portfólio' },
+  { href: 'som/', texto: 'Som' },
+  { href: 'haja-day/', texto: 'Haja Day' },
+  { href: 'agendar/', texto: 'Agendar' },
+];
+
+const organizacao = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Haja Produções Brasil',
+  alternateName: 'Haja Produções',
+  slogan: 'Onde o HAJA se torna realidade.',
+  description: descricao,
+  url: inicio.href,
+  logo: new URL(url('img/logo-haja.svg'), Astro.site).href,
+  image: imagemAbs.href,
+  telephone: site.whatsappExibicao,
+  sameAs: [instagramUrl],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: site.whatsappExibicao,
+    contactType: 'customer service',
+    availableLanguage: 'Portuguese',
+  },
+};
+
+const { analytics } = site;
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{nomeCompleto}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonica} />
+    <meta name="theme-color" content="#0A0A0A" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={url('sitemap-index.xml')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Haja Produções" />
+    <meta property="og:title" content={nomeCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:image" content={imagemAbs} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&family=Inter:wght@400;500;600&display=swap" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(organizacao)} />
+
+    {analytics.provedor === 'plausible' && analytics.id && (
+      <script is:inline defer data-domain={analytics.id} src="https://plausible.io/js/script.outbound-links.js"></script>
+    )}
+    {analytics.provedor === 'umami' && analytics.id && (
+      <script is:inline defer data-website-id={analytics.id} src={analytics.scriptUrl || 'https://cloud.umami.is/script.js'}></script>
+    )}
+  </head>
+  <body>
+    <Icones />
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class:list={['nav', { claro: navClara }]} id="nav" data-nav-clara={navClara ? '' : undefined}>
+      <div class="wrap">
+        <a class="marca" href={url()} aria-label="Haja Produções, início">
+          <svg viewBox="0 0 92 60" style="color:var(--laranja)"><use href="#chev" /></svg>HAJA
+        </a>
+        <nav aria-label="Principal">
+          <ul class="links" id="menu">
+            {links.map((l) => (
+              <li><a href={url(l.href)} aria-current={ativo(l.href) ? 'page' : undefined}>{l.texto}</a></li>
+            ))}
+          </ul>
+        </nav>
+        <a class="btn btn-laranja cta-nav" href={whatsapp(site.whatsapp, 'Olá, Haja! Vim pelo site e quero falar sobre um projeto.')} target="_blank" rel="noopener">Fale conosco</a>
+        <button class="menu-botao" id="menuBotao" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu">
+          <svg class="abrir"><use href="#i-menu" /></svg><svg class="fechar"><use href="#i-fechar" /></svg>
+        </button>
+      </div>
+      <div class="progresso" id="progresso"></div>
+    </header>
+
+    <main id="conteudo">
+      <slot />
+    </main>
+
+    <footer class="rodape-site">
+      <div class="wrap">
+        <a class="marca" href={url()}><svg viewBox="0 0 92 60" style="color:var(--laranja)"><use href="#chev" /></svg>HAJA</a>
+        <ul>
+          {links.slice(1).map((l) => <li><a href={url(l.href)}>{l.texto}</a></li>)}
+          <li><a href={instagramUrl} target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+        <p>© {new Date().getFullYear()} Haja Produções Brasil · Criatividade a serviço do Reino</p>
+      </div>
+    </footer>
+
+    <a class="whats-flutuante" href={whatsapp(site.whatsapp, 'Olá, Haja! Vim pelo site.')} target="_blank" rel="noopener" aria-label="Conversar no WhatsApp">
+      <svg><use href="#i-whats" /></svg>
+    </a>
+
+    <script>
+      import { iniciarBase } from '../scripts/base';
+      iniciarBase();
+    </script>
+  </body>
+</html>

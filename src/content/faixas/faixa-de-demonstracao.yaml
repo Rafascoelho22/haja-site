@@ -1,0 +1,6 @@
+titulo: Faixa de demonstração
+artista: Haja Produções
+descricao: Áudio de exemplo feito no SoundCraft para mostrar o player. Troque pelas produções reais no painel /keystatic.
+audio: /audio/faixa-de-demonstracao/audio.flac
+demonstracao: true
+ordem: 0

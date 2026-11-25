@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/site';
+---
+<Base titulo="Página não encontrada">
+  <section class="pagina-escura nao-encontrada">
+    <div class="wrap">
+      <svg class="simbolo" viewBox="0 0 92 60"><use href="#chev" /></svg>
+      <h1>Esse take não existe.</h1>
+      <p class="lead">O endereço pode ter mudado. Volte para o início ou veja o portfólio.</p>
+      <div class="ctas">
+        <a class="btn btn-laranja" href={url()}>Ir para o início</a>
+        <a class="btn btn-link" href={url('portfolio/')}>Ver portfólio ›</a>
+      </div>
+    </div>
+  </section>
+</Base>

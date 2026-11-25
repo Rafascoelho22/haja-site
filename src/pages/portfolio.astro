@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import Reel from '../components/Reel.astro';
+import FundoLogo from '../components/FundoLogo.astro';
+import { CATEGORIAS, getReels, getSite } from '../lib/site';
+
+const site = await getSite();
+const reels = await getReels();
+const contagem = Object.fromEntries(Object.keys(CATEGORIAS).map((c) => [c, reels.filter((r) => r.data.categoria === c).length]));
+const filtros = Object.entries(CATEGORIAS).filter(([c]) => contagem[c] > 0);
+const mes = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<Base titulo="Portfólio" descricao="Louvor ao vivo, sessions acústicas, bastidores, entrevistas e conteúdo para redes produzidos pela Haja Produções." navClara>
+  <section class="pagina-clara portfolio" data-faixa-clara>
+    <FundoLogo />
+    <div class="wrap">
+      <header class="cab-pagina">
+        <p class="eyebrow">Portfólio</p>
+        <h1>Tudo o que já saiu do nosso estúdio.</h1>
+        <p class="lead">Escolha um tipo de produção. Cada reel abre no Instagram.</p>
+      </header>
+
+      <div class="filtros" role="toolbar" aria-label="Filtrar por tipo de produção">
+        <button type="button" class="filtro" data-filtro="todos" aria-pressed="true">Todos <span>{reels.length}</span></button>
+        {filtros.map(([valor, nome]) => (
+          <button type="button" class="filtro" data-filtro={valor} aria-pressed="false">{nome} <span>{contagem[valor]}</span></button>
+        ))}
+      </div>
+      <p class="resultado" id="resultado" aria-live="polite">{reels.length} produções</p>
+
+      <ul class="grade-reels" id="gradeReels">
+        {reels.map((r) => (
+          <li data-categoria={r.data.categoria} style={`view-transition-name: reel-${r.id}`}>
+            <Reel reel={r} instagram={site.instagram} sizes="(max-width: 560px) 46vw, (max-width: 1100px) 30vw, 280px" />
+            <div class="ficha">
+              <strong>{r.data.titulo}</strong>
+              <span>{CATEGORIAS[r.data.categoria]}{r.data.data && ` · ${mes.format(r.data.data)}`}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const botoes = [...document.querySelectorAll<HTMLButtonElement>('.filtro')];
+  const itens = [...document.querySelectorAll<HTMLLIElement>('#gradeReels li')];
+  const resultado = document.getElementById('resultado')!;
+  const validos = new Set(botoes.map((b) => b.dataset.filtro));
+
+  function aplicar(filtro: string, animar = true) {
+    if (!validos.has(filtro)) filtro = 'todos';
+    const mudar = () => {
+      let n = 0;
+      itens.forEach((li) => {
+        const mostra = filtro === 'todos' || li.dataset.categoria === filtro;
+        li.hidden = !mostra;
+        if (mostra) n++;
+      });
+      botoes.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filtro === filtro)));
+      resultado.textContent = `${n} ${n === 1 ? 'produção' : 'produções'}`;
+    };
+    const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (animar && !reduz && 'startViewTransition' in document) document.startViewTransition(mudar);
+    else mudar();
+  }
+
+  botoes.forEach((b) =>
+    b.addEventListener('click', () => {
+      const f = b.dataset.filtro!;
+      history.replaceState(null, '', f === 'todos' ? location.pathname : `#${f}`);
+      aplicar(f);
+    }),
+  );
+  aplicar(location.hash.slice(1) || 'todos', false);
+  addEventListener('hashchange', () => aplicar(location.hash.slice(1) || 'todos'));
+</script>

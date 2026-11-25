@@ -3,3 +3,6 @@
 *.png binary
 *.jpg binary
 *.figcraft binary
+*.scraft binary
+*.flac binary
+*.webp binary
