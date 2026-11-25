@@ -44,22 +44,32 @@ export function iniciarBase() {
     });
   }
 
-  // barra de progresso e cor da barra
-  const claras = [...document.querySelectorAll<HTMLElement>('[data-faixa-clara]')];
+  // cor da barra: fica clara enquanto uma faixa clara passa por baixo dela.
+  // Um IntersectionObserver numa faixa fina no topo evita ler posições a cada quadro.
+  if (!fixaClara) {
+    const sob = new Set<Element>();
+    const obs = new IntersectionObserver(
+      (es) => {
+        es.forEach((e) => (e.isIntersecting ? sob.add(e.target) : sob.delete(e.target)));
+        nav.classList.toggle('claro', sob.size > 0);
+      },
+      { rootMargin: '-26px 0px -94% 0px' },
+    );
+    document.querySelectorAll('[data-faixa-clara]').forEach((s) => obs.observe(s));
+  }
+
+  // barra de progresso: a altura da página só é medida de novo quando ela muda
+  let max = 1;
+  const medirMax = () => (max = Math.max(1, document.documentElement.scrollHeight - innerHeight));
+  new ResizeObserver(medirMax).observe(document.body);
+  addEventListener('resize', medirMax);
+  medirMax();
+  let ultimo = '';
   let pedido = false;
   const quadro = () => {
     pedido = false;
-    const max = document.documentElement.scrollHeight - innerHeight;
-    barra.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
-    if (!fixaClara) {
-      nav.classList.toggle(
-        'claro',
-        claras.some((s) => {
-          const r = s.getBoundingClientRect();
-          return r.top <= 26 && r.bottom > 26;
-        }),
-      );
-    }
+    const v = `scaleX(${Math.min(1, scrollY / max).toFixed(3)})`;
+    if (v !== ultimo) barra.style.transform = ultimo = v;
   };
   addEventListener('scroll', () => {
     if (!pedido) {

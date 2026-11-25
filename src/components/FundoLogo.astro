@@ -1,4 +1,9 @@
+---
+import { url } from '../lib/site';
+---
+<!-- Logo já desfocado no PhotoCraft (figcraft/svg + filter.blur.gaussianBlur): o navegador
+     só desenha a imagem, sem calcular desfoque a cada quadro de rolagem. -->
 <div class="fundo-logo" aria-hidden="true">
-  <svg class="a" viewBox="0 0 92 60"><use href="#chev" /></svg>
-  <svg class="b" viewBox="0 0 92 60"><use href="#chev" /></svg>
+  <img class="a" src={url('img/fundo-logo-laranja.png')} alt="" width="552" height="360" loading="lazy" decoding="async" />
+  <img class="b" src={url('img/fundo-logo-preto.png')} alt="" width="552" height="360" loading="lazy" decoding="async" />
 </div>

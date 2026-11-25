@@ -1,6 +1,8 @@
 import { reduzMovimento } from './base';
 
 // Efeitos da página inicial ligados à rolagem.
+// Para não travar: cada efeito só roda enquanto a sua seção está na tela, todas as leituras
+// de posição acontecem antes das escritas no mesmo quadro, e nada é reescrito se não mudou.
 export function iniciarHome() {
   const reduz = reduzMovimento();
   const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -30,59 +32,96 @@ export function iniciarHome() {
   );
   caps.forEach((c) => capObs.observe(c));
 
+  const hero = document.getElementById('inicio')!;
   const leque = [...document.querySelectorAll<HTMLElement>('#leque .reel')];
   const manifesto = document.getElementById('manifesto')!;
   const galeria = document.getElementById('galeria')!;
   const trilho = document.getElementById('trilho')!;
   const day = document.getElementById('day')!;
   const dayReels = [...document.querySelectorAll<HTMLElement>('#dayReels .reel')];
-  let distGaleria = 0;
 
+  // quais seções estão na tela (com folga de meia tela)
+  const visivel = new Set<Element>();
+  const visObs = new IntersectionObserver(
+    (es) => {
+      es.forEach((e) => (e.isIntersecting ? visivel.add(e.target) : visivel.delete(e.target)));
+      agendar();
+    },
+    { rootMargin: '50% 0px' },
+  );
+  [hero, manifesto, galeria, day].forEach((s) => visObs.observe(s));
+
+  // posições medidas uma vez (e de novo ao redimensionar): ler o DOM a cada quadro custa caro
+  let distGaleria = 0;
+  let topo = { manifesto: 0, manifestoAlt: 0, galeria: 0, day: 0, dayAlt: 0 };
   const medir = () => {
     if (estreito.matches) {
       galeria.style.height = '';
       distGaleria = 0;
-      return;
+    } else {
+      distGaleria = Math.max(0, trilho.scrollWidth - innerWidth);
+      galeria.style.height = `${innerHeight + distGaleria}px`;
     }
-    distGaleria = Math.max(0, trilho.scrollWidth - innerWidth);
-    galeria.style.height = `${innerHeight + distGaleria}px`;
+    const abs = (el: HTMLElement) => el.getBoundingClientRect().top + scrollY;
+    topo = {
+      manifesto: abs(manifesto),
+      manifestoAlt: manifesto.offsetHeight,
+      galeria: abs(galeria),
+      day: abs(day),
+      dayAlt: day.offsetHeight,
+    };
   };
+
+  // o último valor escrito em cada elemento, para não reescrever o que não mudou
+  const ultimo = new WeakMap<HTMLElement, string>();
+  const transformar = (el: HTMLElement, valor: string) => {
+    if (ultimo.get(el) !== valor) {
+      ultimo.set(el, valor);
+      el.style.transform = valor;
+    }
+  };
+  let palavrasAcesas = -1;
+  const r2 = (n: number) => Math.round(n * 100) / 100;
 
   const quadro = () => {
     if (reduz) return;
     const y = scrollY;
     const vh = innerHeight;
-    const meio = Math.floor(leque.length / 2);
 
-    const p = clamp(y / (vh * 0.7));
-    leque.forEach((r, i) => {
-      const d = i - meio;
-      r.style.transform = `translateY(${Math.abs(d) * 24 * (1 - p)}px) rotate(${d * 5 * (1 - p)}deg) scale(${1 + p * (d === 0 ? 0.06 : 0.02)})`;
-    });
+    if (visivel.has(hero)) {
+      const p = r2(clamp(y / (vh * 0.7)));
+      const meio = Math.floor(leque.length / 2);
+      leque.forEach((r, i) => {
+        const d = i - meio;
+        transformar(r, `translateY(${r2(Math.abs(d) * 24 * (1 - p))}px) rotate(${r2(d * 5 * (1 - p))}deg) scale(${r2(1 + p * (d === 0 ? 0.06 : 0.02))})`);
+      });
+    }
 
-    if (!estreito.matches) {
-      const r = manifesto.getBoundingClientRect();
-      const m = clamp((-r.top + vh * 0.25) / (r.height - vh * 0.9));
+    if (visivel.has(manifesto) && !estreito.matches) {
+      const top = topo.manifesto - y;
+      const m = clamp((-top + vh * 0.25) / (topo.manifestoAlt - vh * 0.9));
       const n = Math.round(m * palavras.length);
-      palavras.forEach((w, i) => w.classList.toggle('on', i < n));
+      if (n !== palavrasAcesas) {
+        palavrasAcesas = n;
+        palavras.forEach((w, i) => w.classList.toggle('on', i < n));
+      }
     }
 
-    if (distGaleria) {
-      const g = clamp(-galeria.getBoundingClientRect().top / distGaleria);
-      trilho.style.transform = `translateX(${-g * distGaleria}px)`;
+    if (distGaleria && visivel.has(galeria)) {
+      const g = clamp((y - topo.galeria) / distGaleria);
+      transformar(trilho, `translate3d(${Math.round(-g * distGaleria)}px,0,0)`);
     }
 
-    if (dayReels.length === 3) {
-      const rd = day.getBoundingClientRect();
-      const d = clamp(1 - (rd.top + rd.height * 0.3) / vh);
-      dayReels[0].style.transform = `rotate(${-8 * d}deg) translateX(${-38 * d}%) translateY(${(1 - d) * 40}px)`;
-      dayReels[2].style.transform = `rotate(${8 * d}deg) translateX(${38 * d}%) translateY(${(1 - d) * 40}px)`;
-      dayReels[1].style.transform = `translateY(${(1 - d) * -20}px) scale(${0.96 + d * 0.04})`;
+    if (dayReels.length === 3 && visivel.has(day)) {
+      const d = r2(clamp(1 - (topo.day - y + topo.dayAlt * 0.3) / vh));
+      transformar(dayReels[0], `rotate(${r2(-8 * d)}deg) translateX(${r2(-38 * d)}%) translateY(${r2((1 - d) * 40)}px)`);
+      transformar(dayReels[2], `rotate(${r2(8 * d)}deg) translateX(${r2(38 * d)}%) translateY(${r2((1 - d) * 40)}px)`);
+      transformar(dayReels[1], `translateY(${r2((1 - d) * -20)}px) scale(${r2(0.96 + d * 0.04)})`);
     }
   };
 
   let pedido = false;
-  const agendar = () => {
+  function agendar() {
     if (!pedido) {
       pedido = true;
       requestAnimationFrame(() => {
@@ -90,22 +129,26 @@ export function iniciarHome() {
         quadro();
       });
     }
-  };
+  }
   addEventListener('scroll', agendar, { passive: true });
-  addEventListener('resize', () => {
-    medir();
-    agendar();
-  });
-  estreito.addEventListener('change', () => {
-    medir();
-    agendar();
-  });
+  let espera = 0;
+  const remedir = () => {
+    clearTimeout(espera);
+    espera = window.setTimeout(() => {
+      medir();
+      agendar();
+    }, 120);
+  };
+  addEventListener('resize', remedir);
+  estreito.addEventListener('change', remedir);
+  // a altura das imagens e das fontes muda as posições: mede de novo quando tudo carregou
   addEventListener('load', () => {
     medir();
     quadro();
     const alvo = location.hash && document.getElementById(location.hash.slice(1));
     if (alvo) alvo.scrollIntoView({ behavior: 'instant' });
   });
+  new ResizeObserver(remedir).observe(document.body);
   medir();
   quadro();
   if (estreito.matches || reduz) palavras.forEach((w) => w.classList.add('on'));

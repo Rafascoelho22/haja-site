@@ -40,9 +40,9 @@ p{margin:0}
 .progresso{position:absolute;left:0;bottom:-1px;height:2px;background:var(--laranja);width:100%;transform-origin:left;transform:scaleX(0)}
 
 /* ---------- REEL (formato Instagram) ---------- */
-.reel{position:relative;display:block;aspect-ratio:9/16;max-width:100%;border-radius:clamp(18px,2.4vw,30px);overflow:hidden;background:var(--grafite);text-decoration:none;color:var(--branco);box-shadow:0 30px 60px -20px rgba(0,0,0,.45);isolation:isolate;transform:translateZ(0)}
-.reel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.04) saturate(1.08);animation:respira 10s ease-in-out infinite alternate;backface-visibility:hidden}
-@keyframes respira{from{transform:scale(1)}to{transform:scale(1.035)}}
+.reel{position:relative;display:block;aspect-ratio:9/16;max-width:100%;border-radius:clamp(18px,2.4vw,30px);overflow:hidden;background:var(--grafite);text-decoration:none;color:var(--branco);box-shadow:0 30px 60px -20px rgba(0,0,0,.45);isolation:isolate}
+.reel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.reel:hover img.reel-capa{transform:scale(1.04)}
 .reel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0,transparent 18%,transparent 60%,rgba(0,0,0,.75) 100%);z-index:1}
 .reel-topo{position:absolute;top:12px;left:14px;right:14px;z-index:2;display:flex;justify-content:space-between;align-items:center;font:600 13px/1 var(--corpo)}
 .reel-topo svg{width:20px;height:20px}
@@ -52,7 +52,7 @@ p{margin:0}
 .reel-perfil{display:flex;align-items:center;gap:8px;font:600 12px/1.2 var(--corpo)}
 .reel-perfil img{position:static;width:26px;height:26px;border-radius:50%;animation:none;border:1.5px solid var(--branco)}
 .reel-legenda{font:400 12px/1.35 var(--corpo);opacity:.92;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.reel-play{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:2;display:grid;place-items:center;opacity:0;transform:scale(.8);transition:.35s var(--ease)}
+.reel-play{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.42);border:1.5px solid rgba(255,255,255,.7);z-index:2;display:grid;place-items:center;opacity:0;transform:scale(.8);transition:.35s var(--ease)}
 .reel:hover .reel-play,.reel:focus-visible .reel-play{opacity:1;transform:scale(1)}
 .reel-play svg{width:24px;margin-left:4px}
 
@@ -70,9 +70,9 @@ p{margin:0}
 
 /* logo desfocado ao fundo das faixas claras */
 .fundo-logo{position:absolute;inset:0;overflow:clip;pointer-events:none;z-index:0}
-.fundo-logo svg{position:absolute;color:var(--laranja);filter:blur(clamp(30px,5vw,70px));opacity:.16}
-.fundo-logo .a{width:min(900px,120vw);right:-18%;top:8%}
-.fundo-logo .b{width:min(620px,90vw);left:-14%;bottom:6%;color:var(--preto);opacity:.07}
+.fundo-logo img{position:absolute;max-width:none;height:auto;opacity:.16}
+.fundo-logo .a{width:min(1800px,240vw);right:calc(-18% - min(450px,60vw));top:calc(8% - min(293px,39vw))}
+.fundo-logo .b{width:min(1240px,180vw);left:calc(-14% - min(310px,45vw));bottom:calc(6% - min(202px,29vw));opacity:.07}
 .manifesto .fixo,.producoes,.servicos{position:relative}
 .manifesto .fixo>.wrap,.producoes>.wrap,.servicos>.wrap{position:relative;z-index:1;width:100%}
 .letra-anim{display:inline-block;opacity:0;transform:translateY(.4em);animation:sobe .9s var(--ease) forwards}
