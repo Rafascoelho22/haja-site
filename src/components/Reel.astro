@@ -9,8 +9,9 @@ interface Props {
   eager?: boolean;
   sizes?: string;
   instagram: string;
+  style?: string;
 }
-const { reel, class: classe = '', eager = false, sizes = '(max-width: 560px) 60vw, 300px', instagram } = Astro.props;
+const { reel, class: classe = '', eager = false, sizes = '(max-width: 560px) 60vw, 300px', instagram, style } = Astro.props;
 const { titulo, artista, legenda, capa, instagram: codigo } = reel.data;
 const nome = artista ? `${titulo} · ${artista}` : titulo;
 ---
@@ -21,6 +22,7 @@ const nome = artista ? `${titulo} · ${artista}` : titulo;
   rel="noopener"
   aria-label={`Assistir no Instagram: ${nome}`}
   data-categoria={reel.data.categoria}
+  style={style}
 >
   <Image
     src={capa}

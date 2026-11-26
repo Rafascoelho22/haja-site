@@ -33,7 +33,7 @@ const mes = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric', 
 
       <ul class="grade-reels" id="gradeReels">
         {reels.map((r) => (
-          <li data-categoria={r.data.categoria} style={`view-transition-name: reel-${r.id}`}>
+          <li data-categoria={r.data.categoria} data-vt={`reel-${r.id}`}>
             <Reel reel={r} instagram={site.instagram} sizes="(max-width: 560px) 46vw, (max-width: 1100px) 30vw, 280px" />
             <div class="ficha">
               <strong>{r.data.titulo}</strong>
@@ -90,8 +90,11 @@ const mes = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric', 
       resultado.textContent = `${n} ${n === 1 ? 'produção' : 'produções'}`;
     };
     const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (animar && !reduz && 'startViewTransition' in document) document.startViewTransition(mudar);
-    else mudar();
+    if (animar && !reduz && 'startViewTransition' in document) {
+      // os nomes só existem durante o filtro: fixos, eles seriam capturados em toda troca de página
+      itens.forEach((li) => (li.style.viewTransitionName = li.dataset.vt!));
+      document.startViewTransition(mudar).finished.finally(() => itens.forEach((li) => (li.style.viewTransitionName = '')));
+    } else mudar();
   }
 
   botoes.forEach((b) =>

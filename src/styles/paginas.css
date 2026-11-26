@@ -30,7 +30,7 @@ a.card { text-decoration: none; color: var(--grafite); }
 
 /* ===== WhatsApp flutuante ===== */
 .whats-flutuante { position: fixed; z-index: 40; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 56px; height: 56px; border-radius: 50%; background: var(--laranja); color: var(--branco); display: grid; place-items: center; box-shadow: 0 12px 30px -8px rgba(255, 90, 31, .6); transition: transform .3s var(--ease); }
-.whats-flutuante:hover { transform: scale(1.08); }
+@media (hover: hover) { .whats-flutuante:hover { transform: scale(1.08); } }
 .whats-flutuante svg { width: 28px; height: 28px; }
 
 /* ===== Estrutura das páginas internas ===== */
@@ -56,13 +56,14 @@ a.card { text-decoration: none; color: var(--grafite); }
 .ficha strong { font: 800 16px/1.25 var(--display); letter-spacing: -.01em; }
 .ficha span { font-size: 13px; color: var(--texto-suave); }
 ::view-transition-group(*) { animation-duration: .45s; animation-timing-function: var(--ease); }
+::view-transition-old(*):only-child { animation-duration: .18s; }
 
 /* ===== Som ===== */
 .faixas { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
 .faixa { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px 22px; align-items: center; padding: 22px; border-radius: 24px; background: #141416; border: 1px solid #222225; transition: border-color .3s; }
 .faixa.tocando { border-color: var(--laranja); }
 .faixa-play { width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--laranja); color: var(--branco); display: grid; place-items: center; cursor: pointer; transition: transform .25s var(--ease); }
-.faixa-play:hover { transform: scale(1.06); }
+@media (hover: hover) { .faixa-play:hover { transform: scale(1.06); } }
 .faixa-play:disabled { background: #3A3A3C; cursor: not-allowed; }
 .faixa-play svg { width: 22px; height: 22px; }
 .faixa-play .i-play { margin-left: 3px; }
@@ -213,11 +214,16 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-event
 .letreiro-faixa li::after { content: "»"; color: var(--laranja); padding-inline: clamp(18px, 2.4vw, 36px); }
 .letreiro-faixa a { color: var(--branco); text-decoration: none; transition: color .2s; }
 .letreiro-faixa a:hover, .letreiro-faixa a:focus-visible { color: var(--laranja); }
-.letreiro:hover .letreiro-faixa, .letreiro:focus-within .letreiro-faixa { animation-play-state: paused; }
+.letreiro:hover .letreiro-faixa, .letreiro:focus-within .letreiro-faixa, .letreiro.pausado .letreiro-faixa { animation-play-state: paused; }
+.letreiro-pausa { -webkit-tap-highlight-color: transparent; position: absolute; right: max(var(--gutter-r), calc((100vw - 1200px) / 2 + 20px)); top: -54px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #3A3A3C; background: transparent; color: var(--branco); display: grid; place-items: center; cursor: pointer; }
+.letreiro-pausa svg { width: 16px; height: 16px; }
+.letreiro-pausa .i-play, .letreiro-pausa[aria-pressed="true"] .i-pausa { display: none; }
+.letreiro-pausa[aria-pressed="true"] .i-play { display: block; }
+.letreiro-area { position: relative; }
 @keyframes letreiro { to { transform: translateX(-100%); } }
 @media (prefers-reduced-motion: reduce) {
   .letreiro { overflow-x: auto; }
-  .letreiro-faixa[aria-hidden] { display: none; }
+  .letreiro-faixa[aria-hidden], .letreiro-pausa { display: none; }
 }
 @media (max-width: 860px) {
   .artistas .wrap { text-align: center; }
@@ -232,7 +238,8 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-event
 .yt { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; padding: 0; border-radius: 20px; overflow: hidden; background: #141416; cursor: pointer; }
 .yt img { width: 100%; height: 100%; object-fit: cover; }
 .yt-play { position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%; background: var(--laranja); color: var(--branco); display: grid; place-items: center; transition: transform .3s var(--ease); }
-.yt:hover .yt-play, .yt:focus-visible .yt-play { transform: scale(1.08); }
+@media (hover: hover) { .yt:hover .yt-play { transform: scale(1.08); } }
+.yt:focus-visible .yt-play { transform: scale(1.08); }
 .yt-play svg { width: 24px; height: 24px; margin-left: 3px; }
 .clipes .ficha span { color: var(--texto-suave-escuro); }
 .clipes .canal { margin-top: 36px; }
@@ -254,3 +261,34 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-event
 
 /* ===== Agendar: a agenda do Cal.com abre só no clique ===== */
 .cal:has(#abrirCal) { min-height: 0; padding: clamp(24px, 3.5vw, 40px); display: grid; gap: 14px; justify-items: start; }
+
+/* ===== Efeitos da página inicial presos à rolagem, só com CSS =====
+   As mesmas contas de home.ts, que continua como reserva onde não há animation-timeline. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* leque: fecha nos primeiros 70% de tela rolada */
+    .leque .reel { animation: leque-fecha linear both; animation-timeline: scroll(root); animation-range: 0 70vh; }
+    /* Haja Day: os reels laterais se abrem enquanto a faixa passa */
+    .day { view-timeline-name: --day; }
+    .day-reels .reel { animation: linear both; animation-timeline: --day; animation-range: entry 30% exit 30%; }
+    .day-reels .reel:nth-child(1) { animation-name: day-esquerda; }
+    .day-reels .reel:nth-child(2) { animation-name: day-centro; }
+    .day-reels .reel:nth-child(3) { animation-name: day-direita; }
+    @media (min-width: 861px) {
+      /* galeria: o trilho anda na horizontal enquanto a seção fica presa */
+      .galeria { view-timeline-name: --galeria; }
+      .trilho { animation: trilho linear both; animation-timeline: --galeria; animation-range: contain; }
+      /* manifesto: cada palavra acende no seu trecho da rolagem */
+      .manifesto { view-timeline-name: --manifesto; }
+      .manifesto .w { transition: none; animation: palavra linear both; animation-timeline: --manifesto; animation-range: cover calc(75vh + var(--i) * var(--passo)) cover calc(75vh + (var(--i) + 1) * var(--passo)); }
+      .manifesto .w.l { animation-name: palavra-laranja; }
+    }
+  }
+}
+@keyframes leque-fecha { from { transform: translateY(var(--y, 0)) rotate(var(--r, 0deg)) scale(1); } to { transform: translateY(0) rotate(0deg) scale(var(--s, 1)); } }
+@keyframes day-esquerda { from { transform: rotate(0deg) translateX(0) translateY(40px); } to { transform: rotate(-8deg) translateX(-38%) translateY(0); } }
+@keyframes day-direita { from { transform: rotate(0deg) translateX(0) translateY(40px); } to { transform: rotate(8deg) translateX(38%) translateY(0); } }
+@keyframes day-centro { from { transform: translateY(-20px) scale(.96); } to { transform: translateY(0) scale(1); } }
+@keyframes trilho { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(calc(-1 * var(--dist, 0px)), 0, 0); } }
+@keyframes palavra { from { opacity: .12; } to { opacity: 1; } }
+@keyframes palavra-laranja { from { opacity: .12; color: var(--grafite); } to { opacity: 1; color: var(--laranja); } }

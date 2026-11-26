@@ -62,7 +62,11 @@ const servicos = [
       </div>
     </div>
     <div class="leque" id="leque">
-      {leque.map((r, i) => <Reel reel={r} instagram={ig} eager={i === 2} sizes="(max-width: 560px) 36vw, 260px" />)}
+      {leque.map((r, i) => {
+        // posição inicial do leque já no HTML: abre no primeiro quadro, sem esperar o JS
+        const d = i - Math.floor(leque.length / 2);
+        return <Reel reel={r} instagram={ig} eager={i === 2} sizes="(max-width: 560px) 36vw, 260px" style={`--y:${Math.abs(d) * 24}px;--r:${d * 5}deg;--s:${d === 0 ? 1.06 : 1.02}`} />;
+      })}
     </div>
   </section>
 
@@ -70,7 +74,6 @@ const servicos = [
     <div class="fixo">
       <FundoLogo />
       <div class="wrap">
-        <p class="eyebrow" style="margin-bottom:28px">Sobre a Haja</p>
         <p class="frase" id="frase">Cada som. Cada take. Cada história contada com *excelência *e *propósito.</p>
         <p class="apoio">A Haja Produções nasceu para dar voz a artistas, ministérios e igrejas que querem levar uma mensagem com qualidade de estúdio. Somos o braço brasileiro da <a href={`https://www.instagram.com/${site.instagramGlobal || 'hajaproducoesglobal'}/`} target="_blank" rel="noopener">@{site.instagramGlobal || 'hajaproducoesglobal'}</a>.</p>
       </div>
@@ -81,7 +84,6 @@ const servicos = [
     <FundoLogo />
     <div class="wrap">
       <div class="producoes-cab rv">
-        <p class="eyebrow">O que a gente grava</p>
         <h2>Do primeiro take ao último frame.</h2>
       </div>
       <div class="historia">
@@ -143,7 +145,9 @@ const servicos = [
           </dl>
         )}
       </div>
-      <div class="letreiro">
+      <div class="letreiro-area">
+      <button class="letreiro-pausa" id="letreiroPausa" type="button" aria-pressed="false" aria-label="Pausar o letreiro de artistas"><svg class="i-pausa"><use href="#i-pausa" /></svg><svg class="i-play"><use href="#i-play" /></svg></button>
+      <div class="letreiro" id="letreiro">
         {[0, 1].map((copia) => (
           <ul class="letreiro-faixa" aria-hidden={copia === 1 ? 'true' : undefined}>
             {artistas.map((a) => {
@@ -152,6 +156,7 @@ const servicos = [
             })}
           </ul>
         ))}
+      </div>
       </div>
     </section>
   )}

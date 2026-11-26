@@ -52,7 +52,7 @@ A navegação segue a lógica das páginas de produto da Apple. A página vai se
 - **Keystatic**: um painel para a equipe da Haja adicionar reels, faixas e edições do Haja Day sem mexer em código.
 - **Imagens otimizadas**: cada capa vira WebP em quatro tamanhos, e o navegador baixa só o que precisa (10 a 100 KB por capa).
 - **Transições suaves** entre páginas, com a View Transitions API nativa do navegador.
-- **Rolagem leve**: as revelações e a barra de progresso são animadas só com CSS (`animation-timeline`) onde o navegador permite, as seções abaixo da dobra só são desenhadas quando chegam perto da tela (`content-visibility`), e as fontes são servidas pelo próprio site.
+- **Rolagem leve**: as revelações, a barra de progresso, o leque, o manifesto, a galeria horizontal e os reels do Haja Day são animados só com CSS (`animation-timeline`) onde o navegador permite, com o JS como reserva; no celular a barra de navegação dispensa o desfoque ao vivo; as seções abaixo da dobra só são desenhadas quando chegam perto da tela (`content-visibility`), e as fontes são servidas pelo próprio site.
 - **Nada pesado antes do clique**: os clipes do YouTube e a agenda do Cal.com só carregam quando a pessoa pede.
 - **Pensado para o celular**: conteúdo centralizado, menu próprio e botão de WhatsApp sempre à mão.
 - **SEO**: título e descrição por página, imagem de compartilhamento, sitemap e dados estruturados (schema.org).

@@ -20,6 +20,10 @@ export default defineConfig({
   integrations: [sitemap(), ...(dev ? [react(), keystatic()] : [])],
   ...(dev ? { adapter: node({ mode: 'standalone' }) } : {}),
   image: { responsiveStyles: true },
+  // CSS sem minificar: o minificador (lightningcss) junta animation-timeline dentro do atalho
+  // `animation`, forma que o Chrome descarta, e as animações presas à rolagem somem.
+  // Custa cerca de 1,5 KB a mais com gzip.
+  vite: { build: { cssMinify: false } },
   // fontes baixadas no build e servidas pelo próprio site (sem esperar o Google Fonts)
   fonts: [
     { provider: fontProviders.google(), name: 'Montserrat', cssVariable: '--fonte-display', weights: [600, 800, 900], subsets: ['latin'], fallbacks: ['Arial Black', 'sans-serif'] },

@@ -21,17 +21,21 @@ p{margin:0}
 :focus-visible{outline:3px solid var(--laranja);outline-offset:3px;border-radius:6px}
 
 /* ---------- NAV ---------- */
-.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(10,10,10,.72);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(255,255,255,.08);transition:background .4s}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(10,10,10,.72);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(255,255,255,.08);transition:background .25s}
 .nav.claro{background:rgba(255,255,255,.78);border-bottom-color:rgba(0,0,0,.08)}
 .nav .wrap{display:flex;align-items:center;gap:24px;height:52px}
 .marca{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--branco);font:900 18px/1 var(--display);letter-spacing:.02em}
 .nav.claro .marca,.nav.claro .links a{color:var(--grafite)}
+.nav .marca,.nav .links a{transition:color .25s,opacity .2s}
+/* no celular o desfoque da barra seria refeito a cada quadro da rolagem: fundo quase opaco no lugar */
+@media (hover:none){.nav{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(10,10,10,.95)}.nav.claro{background:rgba(255,255,255,.96)}}
 .marca svg{width:22px;height:auto}
 .links{display:flex;gap:28px;margin-left:auto;list-style:none;padding:0}
 .links a{font-size:13px;color:#E8E8ED;text-decoration:none;opacity:.85;transition:opacity .2s}
 .links a:hover{opacity:1}
 .btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;font:600 15px/1 var(--corpo);text-decoration:none;padding:14px 24px;transition:transform .3s var(--ease),background .3s}
-.btn:hover{transform:scale(1.04)}
+@media (hover:hover){.btn:hover{transform:scale(1.04)}}
+.btn:active{transform:scale(.97)}
 .btn-laranja{background:var(--laranja);color:var(--branco)}
 .btn-laranja:hover{background:var(--laranja-escuro)}
 .btn-preto{background:var(--preto);color:var(--branco)}
@@ -42,7 +46,7 @@ p{margin:0}
 /* ---------- REEL (formato Instagram) ---------- */
 .reel{position:relative;display:block;aspect-ratio:9/16;max-width:100%;border-radius:clamp(18px,2.4vw,30px);overflow:hidden;background:var(--grafite);text-decoration:none;color:var(--branco);box-shadow:0 30px 60px -20px rgba(0,0,0,.45);isolation:isolate}
 .reel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
-.reel:hover img.reel-capa{transform:scale(1.04)}
+@media (hover:hover){.reel:hover img.reel-capa{transform:scale(1.04)}}
 .reel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0,transparent 18%,transparent 60%,rgba(0,0,0,.75) 100%);z-index:1}
 .reel-topo{position:absolute;top:12px;left:14px;right:14px;z-index:2;display:flex;justify-content:space-between;align-items:center;font:600 13px/1 var(--corpo)}
 .reel-topo svg{width:20px;height:20px}
@@ -53,7 +57,8 @@ p{margin:0}
 .reel-perfil img{position:static;width:26px;height:26px;border-radius:50%;animation:none;border:1.5px solid var(--branco)}
 .reel-legenda{font:400 12px/1.35 var(--corpo);opacity:.92;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .reel-play{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.42);border:1.5px solid rgba(255,255,255,.7);z-index:2;display:grid;place-items:center;opacity:0;transform:scale(.8);transition:.35s var(--ease)}
-.reel:hover .reel-play,.reel:focus-visible .reel-play{opacity:1;transform:scale(1)}
+@media (hover:hover){.reel:hover .reel-play{opacity:1;transform:scale(1)}}
+.reel:focus-visible .reel-play{opacity:1;transform:scale(1)}
 .reel-play svg{width:24px;margin-left:4px}
 
 /* ---------- HERO ---------- */
@@ -65,7 +70,7 @@ p{margin:0}
 .hero .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px}
 .hero-texto{position:relative;z-index:1}
 .leque{position:relative;z-index:1;display:flex;justify-content:center;align-items:center;gap:clamp(10px,1.6vw,22px);margin-top:clamp(48px,7vw,80px);padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
-.leque .reel{width:clamp(96px,14vw,210px);flex:none;will-change:transform}
+.leque .reel{width:clamp(96px,14vw,210px);flex:none;will-change:transform;transform:translateY(var(--y,0)) rotate(var(--r,0deg))}
 .leque .reel:nth-child(3){width:clamp(130px,18vw,260px)}
 
 /* logo desfocado ao fundo das faixas claras */
@@ -137,8 +142,8 @@ p{margin:0}
 .servicos .intro{text-align:center;color:var(--texto-suave);margin:18px auto 0;max-width:46ch;font-size:clamp(17px,1.6vw,21px)}
 .grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:clamp(40px,6vw,72px)}
 .card{background:var(--cinza);border-radius:28px;padding:34px 30px 32px;display:flex;flex-direction:column;gap:12px;transition:transform .5s var(--ease),background .4s,color .4s}
-.card:hover{transform:translateY(-6px);background:var(--preto);color:var(--branco)}
-.card:hover p{color:var(--texto-suave-escuro)}
+@media (hover:hover){.card:hover{transform:translateY(-6px);background:var(--preto);color:var(--branco)}
+.card:hover p{color:var(--texto-suave-escuro)}}
 .card svg{width:34px;color:var(--laranja);margin-bottom:28px}
 .card h3{font-size:24px;letter-spacing:-.02em}
 .card p{color:var(--texto-suave);font-size:16px}

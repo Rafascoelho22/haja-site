@@ -5,6 +5,9 @@ import { reduzMovimento } from './base';
 // de posição acontecem antes das escritas no mesmo quadro, e nada é reescrito se não mudou.
 export function iniciarHome() {
   const reduz = reduzMovimento();
+  // com animation-timeline, o leque, o manifesto, o trilho e o Haja Day andam só com CSS (paginas.css),
+  // fora da thread principal; este código vira reserva e só mede o que o CSS precisa
+  const pelaRolagemCss = !reduz && CSS.supports('animation-timeline: view()');
   const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const estreito = matchMedia('(max-width:860px)');
 
@@ -12,9 +15,11 @@ export function iniciarHome() {
   const frase = document.getElementById('frase')!;
   frase.innerHTML = frase.textContent!
     .split(' ')
-    .map((w) => (w.startsWith('*') ? `<span class="w l">${w.slice(1)}</span>` : `<span class="w">${w}</span>`))
+    .map((w, i) => (w.startsWith('*') ? `<span class="w l" style="--i:${i}">${w.slice(1)}</span>` : `<span class="w" style="--i:${i}">${w}</span>`))
     .join(' ');
   const palavras = [...frase.querySelectorAll('.w')];
+  // cada palavra acende num trecho de 170vh dividido igualmente (a mesma conta do JS abaixo)
+  frase.style.setProperty('--passo', `calc(170vh / ${palavras.length})`);
 
   // capítulos: troca o reel fixo na lateral
   const caps = [...document.querySelectorAll<HTMLElement>('.capitulo')];
@@ -62,6 +67,7 @@ export function iniciarHome() {
       distGaleria = Math.max(0, trilho.scrollWidth - innerWidth);
       galeria.style.height = `${innerHeight + distGaleria}px`;
     }
+    trilho.style.setProperty('--dist', `${distGaleria}px`);
     const abs = (el: HTMLElement) => el.getBoundingClientRect().top + scrollY;
     topo = {
       manifesto: abs(manifesto),
@@ -84,7 +90,7 @@ export function iniciarHome() {
   const r2 = (n: number) => Math.round(n * 100) / 100;
 
   const quadro = () => {
-    if (reduz) return;
+    if (reduz || pelaRolagemCss) return;
     const y = scrollY;
     const vh = innerHeight;
 
@@ -152,4 +158,13 @@ export function iniciarHome() {
   medir();
   quadro();
   if (estreito.matches || reduz) palavras.forEach((w) => w.classList.add('on'));
+
+  // letreiro de artistas: no toque não há hover para pausar, então há um botão
+  const pausa = document.getElementById('letreiroPausa');
+  const letreiro = document.getElementById('letreiro');
+  pausa?.addEventListener('click', () => {
+    const pausado = letreiro!.classList.toggle('pausado');
+    pausa.setAttribute('aria-pressed', String(pausado));
+    pausa.setAttribute('aria-label', pausado ? 'Retomar o letreiro de artistas' : 'Pausar o letreiro de artistas');
+  });
 }
