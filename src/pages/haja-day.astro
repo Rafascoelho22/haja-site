@@ -43,8 +43,23 @@ const edicoes = await Promise.all(
           <>
             <p class="proximo-rotulo">Próxima edição</p>
             <p class="proximo-data">Data em breve</p>
-            <p class="proximo-nota">Avisamos você pelo WhatsApp assim que as inscrições abrirem.</p>
-            <a class="btn btn-preto" href={avisar} target="_blank" rel="noopener">Quero ser avisado</a>
+            {site.buttondown ? (
+              <>
+                <p class="proximo-nota">Deixe seu e-mail e avisamos assim que as inscrições abrirem.</p>
+                <form class="espera" action={`https://buttondown.com/api/emails/embed-subscribe/${site.buttondown}`} method="post" target="_blank">
+                  <label class="sr" for="espera-email">Seu e-mail</label>
+                  <input id="espera-email" type="email" name="email" placeholder="seu@email.com" autocomplete="email" required />
+                  <input type="hidden" name="tag" value="haja-day" />
+                  <button class="btn btn-laranja" type="submit">Quero ser avisado</button>
+                </form>
+                <a class="btn btn-link" href={avisar} target="_blank" rel="noopener">Prefiro pelo WhatsApp ›</a>
+              </>
+            ) : (
+              <>
+                <p class="proximo-nota">Avisamos você pelo WhatsApp assim que as inscrições abrirem.</p>
+                <a class="btn btn-preto" href={avisar} target="_blank" rel="noopener">Quero ser avisado</a>
+              </>
+            )}
           </>
         )}
       </div>

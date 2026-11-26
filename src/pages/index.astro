@@ -2,11 +2,21 @@
 import Base from '../layouts/Base.astro';
 import Reel from '../components/Reel.astro';
 import FundoLogo from '../components/FundoLogo.astro';
+import { getCollection } from 'astro:content';
 import { getReels, getSite, url, whatsapp } from '../lib/site';
 
 const site = await getSite();
 const reels = await getReels();
 const ig = site.instagram;
+const artistas = (await getCollection('artistas')).sort((a, b) => a.data.ordem - b.data.ordem);
+const edicoes = await getCollection('edicoes');
+const clipes = await getCollection('clipes');
+const linkArtista = (a: (typeof artistas)[number]) => a.data.link || (a.data.instagram ? `https://www.instagram.com/${a.data.instagram}/` : null);
+const numeros = [
+  { n: reels.length + clipes.length, t: 'produções publicadas' },
+  { n: artistas.length, t: 'artistas e ministérios' },
+  { n: edicoes.length, t: edicoes.length === 1 ? 'edição do Haja Day' : 'edições do Haja Day' },
+].filter((x) => x.n > 0);
 const porCategoria = (c: string) => reels.filter((r) => r.data.categoria === c);
 
 // abertura: até 5 destaques, o mais forte no centro
@@ -62,7 +72,7 @@ const servicos = [
       <div class="wrap">
         <p class="eyebrow" style="margin-bottom:28px">Sobre a Haja</p>
         <p class="frase" id="frase">Cada som. Cada take. Cada história contada com *excelência *e *propósito.</p>
-        <p class="apoio">A Haja Produções nasceu para dar voz a artistas, ministérios e igrejas que querem levar uma mensagem com qualidade de estúdio. Somos o braço brasileiro da @hajaproducoesglobal.</p>
+        <p class="apoio">A Haja Produções nasceu para dar voz a artistas, ministérios e igrejas que querem levar uma mensagem com qualidade de estúdio. Somos o braço brasileiro da <a href={`https://www.instagram.com/${site.instagramGlobal || 'hajaproducoesglobal'}/`} target="_blank" rel="noopener">@{site.instagramGlobal || 'hajaproducoesglobal'}</a>.</p>
       </div>
     </div>
   </section>
@@ -113,7 +123,7 @@ const servicos = [
       <div class="rv">
         <p class="eyebrow">Haja Day</p>
         <h2>Um dia inteiro <span>de criação.</span></h2>
-        <p>Já estamos na terceira edição. Artistas, câmeras, luz e som no mesmo lugar para produzir conteúdo de verdade, do ensaio ao vídeo publicado.</p>
+        <p>{edicoes.length > 1 ? `Já foram ${edicoes.length} edições.` : ''} Artistas, câmeras, luz e som no mesmo lugar para produzir conteúdo de verdade, do ensaio ao vídeo publicado. O próximo a viver isso pode ser você.</p>
         <a class="btn btn-preto" href={url('haja-day/')}>Conhecer o Haja Day ›</a>
       </div>
       <div class="day-reels" id="dayReels">
@@ -121,6 +131,30 @@ const servicos = [
       </div>
     </div>
   </section>
+
+  {artistas.length > 0 && (
+    <section class="artistas" id="artistas" aria-labelledby="artistas-titulo">
+      <div class="wrap">
+        <p class="eyebrow rv">Quem já passou pela Haja</p>
+        <h2 class="rv" id="artistas-titulo">Você entra com a visão. <span>A Haja entra com a estrutura.</span></h2>
+        {numeros.length > 0 && (
+          <dl class="numeros rv">
+            {numeros.map((x) => <div><dt>{x.t}</dt><dd>{x.n}</dd></div>)}
+          </dl>
+        )}
+      </div>
+      <div class="letreiro">
+        {[0, 1].map((copia) => (
+          <ul class="letreiro-faixa" aria-hidden={copia === 1 ? 'true' : undefined}>
+            {artistas.map((a) => {
+              const href = linkArtista(a);
+              return <li>{href ? <a href={href} target="_blank" rel="noopener" tabindex={copia === 1 ? -1 : undefined}>{a.data.nome}</a> : <span>{a.data.nome}</span>}</li>;
+            })}
+          </ul>
+        ))}
+      </div>
+    </section>
+  )}
 
   <section class="servicos" id="servicos" data-faixa-clara>
     <FundoLogo />
@@ -146,6 +180,7 @@ const servicos = [
       <div class="dados rv">
         <span>WhatsApp <b id="fone">{site.whatsappExibicao}</b></span>
         <span>Instagram <b>@{site.instagram}</b></span>
+        {site.youtube && <span>YouTube <b>@{site.youtube}</b></span>}
       </div>
       <div class="ctas rv">
         <a class="btn btn-laranja" href={url('agendar/')}>Agendar uma gravação</a>

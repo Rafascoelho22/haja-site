@@ -1,0 +1,28 @@
+---
+// Fachada leve do YouTube: mostra só a capa (cerca de 30 KB) e troca pelo player de verdade
+// (cerca de 540 KB) apenas quando a pessoa clica. Nada do YouTube carrega durante a rolagem.
+interface Props {
+  id: string;
+  titulo: string;
+}
+const { id, titulo } = Astro.props;
+---
+<button class="yt" type="button" data-yt={id} data-titulo={titulo} aria-label={`Tocar ${titulo}`}>
+  <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" width="480" height="360" loading="lazy" decoding="async" />
+  <span class="yt-play" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-play" /></svg></span>
+</button>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const botao = (e.target as Element).closest<HTMLButtonElement>('button.yt');
+    if (!botao) return;
+    const quadro = document.createElement('iframe');
+    quadro.src = `https://www.youtube-nocookie.com/embed/${botao.dataset.yt}?autoplay=1&rel=0&playsinline=1`;
+    quadro.title = botao.dataset.titulo ?? 'Vídeo no YouTube';
+    quadro.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    quadro.allowFullscreen = true;
+    quadro.className = 'yt yt-ativo';
+    botao.replaceWith(quadro);
+    quadro.focus();
+  });
+</script>

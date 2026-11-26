@@ -2,6 +2,9 @@
 // barra clara sobre faixas claras e revelação ao rolar.
 export const reduzMovimento = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/** O navegador anima pela rolagem só com CSS (paginas.css)? Então o JS abaixo não precisa rodar. */
+const cssPelaRolagem = () => !reduzMovimento() && CSS.supports('animation-timeline: view()');
+
 export function iniciarBase() {
   const nav = document.getElementById('nav')!;
   const barra = document.getElementById('progresso')!;
@@ -24,7 +27,7 @@ export function iniciarBase() {
   nav.querySelectorAll('.links a').forEach((a) => a.addEventListener('click', fechar));
 
   // revelar ao rolar: só o que começa abaixo da dobra fica escondido
-  if (!reduzMovimento()) {
+  if (!reduzMovimento() && !cssPelaRolagem()) {
     const io = new IntersectionObserver(
       (es) =>
         es.forEach((e) => {
@@ -59,6 +62,7 @@ export function iniciarBase() {
   }
 
   // barra de progresso: a altura da página só é medida de novo quando ela muda
+  if (cssPelaRolagem()) return;
   let max = 1;
   const medirMax = () => (max = Math.max(1, document.documentElement.scrollHeight - innerHeight));
   new ResizeObserver(medirMax).observe(document.body);

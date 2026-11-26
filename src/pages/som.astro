@@ -17,7 +17,7 @@ const faixas = (await getCollection('faixas')).sort((a, b) => a.data.ordem - b.d
 
       <ol class="faixas">
         {faixas.map((f, i) => (
-          <li class="faixa rv" data-audio={f.data.audio ? url(f.data.audio) : undefined}>
+          <li class="faixa rv" data-audio={f.data.audio ? url(f.data.audio) : undefined} data-antes={f.data.audio && f.data.audioAntes ? url(f.data.audioAntes) : undefined}>
             <button class="faixa-play" type="button" aria-label={`Tocar ${f.data.titulo}`} disabled={!f.data.audio}>
               <svg class="i-play"><use href="#i-play" /></svg>
               <svg class="i-pausa"><use href="#i-pausa" /></svg>
@@ -29,6 +29,13 @@ const faixas = (await getCollection('faixas')).sort((a, b) => a.data.ordem - b.d
                 {f.data.demonstracao && <span class="selo">Demonstração</span>}
               </p>
               <p class="faixa-artista">{f.data.artista}</p>
+              {f.data.audio && f.data.audioAntes && (
+                <div class="ab" role="group" aria-label="Comparar versões">
+                  <button type="button" data-versao="antes" aria-pressed="false">Antes</button>
+                  <button type="button" data-versao="depois" aria-pressed="true">Depois</button>
+                  <span class="ab-nota">Troque no meio da música para ouvir a diferença da mixagem.</span>
+                </div>
+              )}
               <div class="onda" aria-hidden="true"></div>
               {f.data.descricao && <p class="faixa-desc">{f.data.descricao}</p>}
             </div>
@@ -81,6 +88,24 @@ const faixas = (await getCollection('faixas')).sort((a, b) => a.data.ordem - b.d
     players.set(li, ws);
     return ws;
   }
+
+  // Antes/Depois: troca de versão no mesmo ponto da música, sem parar
+  faixas.forEach((li) => {
+    const botoes = [...li.querySelectorAll<HTMLButtonElement>('.ab button')];
+    botoes.forEach((b) =>
+      b.addEventListener('click', async () => {
+        if (b.getAttribute('aria-pressed') === 'true') return;
+        botoes.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        const ws = criar(li);
+        const t = ws.getCurrentTime();
+        const tocava = ws.isPlaying();
+        li.classList.toggle('versao-antes', b.dataset.versao === 'antes');
+        await ws.load(b.dataset.versao === 'antes' ? li.dataset.antes! : li.dataset.audio!);
+        ws.setTime(t);
+        if (tocava) ws.play();
+      }),
+    );
+  });
 
   // a forma de onda só carrega quando a faixa chega perto da tela
   const io = new IntersectionObserver(

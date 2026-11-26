@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/paginas.css';
+import { Font } from 'astro:assets';
 import Icones from '../components/Icones.astro';
 import { getSite, url, whatsapp } from '../lib/site';
 
@@ -25,6 +26,8 @@ const canonica = new URL(Astro.url.pathname, Astro.site);
 const imagemAbs = new URL(url(imagem), Astro.site);
 const inicio = new URL(url(), Astro.site);
 const instagramUrl = `https://www.instagram.com/${site.instagram}/`;
+const youtubeUrl = site.youtube ? `https://www.youtube.com/@${site.youtube}` : null;
+const globalUrl = site.instagramGlobal ? `https://www.instagram.com/${site.instagramGlobal}/` : null;
 const caminho = Astro.url.pathname;
 const ativo = (p: string) => (p === '' ? caminho === url() : caminho.startsWith(url(p)));
 
@@ -47,7 +50,7 @@ const organizacao = {
   logo: new URL(url('img/logo-haja.svg'), Astro.site).href,
   image: imagemAbs.href,
   telephone: site.whatsappExibicao,
-  sameAs: [instagramUrl],
+  sameAs: [instagramUrl, youtubeUrl, globalUrl].filter(Boolean),
   contactPoint: {
     '@type': 'ContactPoint',
     telephone: site.whatsappExibicao,
@@ -81,9 +84,8 @@ const { analytics } = site;
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&family=Inter:wght@400;500;600&display=swap" />
+    <Font cssVariable="--fonte-display" preload={[{ weight: 900 }]} />
+    <Font cssVariable="--fonte-corpo" preload={[{ weight: 400 }]} />
 
     <script type="application/ld+json" set:html={JSON.stringify(organizacao)} />
 
@@ -128,6 +130,8 @@ const { analytics } = site;
         <ul>
           {links.slice(1).map((l) => <li><a href={url(l.href)}>{l.texto}</a></li>)}
           <li><a href={instagramUrl} target="_blank" rel="noopener">Instagram</a></li>
+          {youtubeUrl && <li><a href={youtubeUrl} target="_blank" rel="noopener">YouTube</a></li>}
+          {globalUrl && <li><a href={globalUrl} target="_blank" rel="noopener">Haja Global</a></li>}
         </ul>
         <p>© {new Date().getFullYear()} Haja Produções Brasil · Criatividade a serviço do Reino</p>
       </div>

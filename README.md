@@ -52,6 +52,8 @@ A navegação segue a lógica das páginas de produto da Apple. A página vai se
 - **Keystatic**: um painel para a equipe da Haja adicionar reels, faixas e edições do Haja Day sem mexer em código.
 - **Imagens otimizadas**: cada capa vira WebP em quatro tamanhos, e o navegador baixa só o que precisa (10 a 100 KB por capa).
 - **Transições suaves** entre páginas, com a View Transitions API nativa do navegador.
+- **Rolagem leve**: as revelações e a barra de progresso são animadas só com CSS (`animation-timeline`) onde o navegador permite, as seções abaixo da dobra só são desenhadas quando chegam perto da tela (`content-visibility`), e as fontes são servidas pelo próprio site.
+- **Nada pesado antes do clique**: os clipes do YouTube e a agenda do Cal.com só carregam quando a pessoa pede.
 - **Pensado para o celular**: conteúdo centralizado, menu próprio e botão de WhatsApp sempre à mão.
 - **SEO**: título e descrição por página, imagem de compartilhamento, sitemap e dados estruturados (schema.org).
 - **Acessível**: respeita a opção de reduzir animações, tem o atalho "Pular para o conteúdo", foco visível e rótulos em todos os reels e botões.
@@ -62,11 +64,11 @@ A navegação segue a lógica das páginas de produto da Apple. A página vai se
 
 | Página | O que tem |
 |---|---|
-| **[Início](https://rafascoelho22.github.io/haja-site/)** | Abertura com reels em leque, manifesto que acende palavra por palavra, capítulos com o reel fixo na lateral, galeria horizontal, Haja Day, serviços e contato. |
-| **[Portfólio](https://rafascoelho22.github.io/haja-site/portfolio/)** | Todos os reels, com filtro por tipo (louvor ao vivo, sessions, bastidores…). A grade se reorganiza com animação, e o filtro fica no link (`/portfolio/#sessions`). |
-| **[Som](https://rafascoelho22.github.io/haja-site/som/)** | Player de áudio com forma de onda ([wavesurfer.js](https://wavesurfer.xyz)). Toca uma faixa por vez, e a forma de onda só carrega quando aparece na tela. |
-| **[Haja Day](https://rafascoelho22.github.io/haja-site/haja-day/)** | Próxima edição com contagem regressiva e link de inscrição (ou "Quero ser avisado", enquanto não há data) e a lista das edições com os reels de cada uma. |
-| **[Agendar](https://rafascoelho22.github.io/haja-site/agendar/)** | Agenda do [Cal.com](https://cal.com) dentro do site, quando configurada. Sem ela, um formulário curto monta a mensagem e abre o WhatsApp. |
+| **[Início](https://rafascoelho22.github.io/haja-site/)** | Abertura com reels em leque, manifesto que acende palavra por palavra, capítulos com o reel fixo na lateral, galeria horizontal, Haja Day, artistas atendidos (com números e letreiro), serviços e contato. |
+| **[Portfólio](https://rafascoelho22.github.io/haja-site/portfolio/)** | Todos os reels, com filtro por tipo (louvor ao vivo, sessions, bastidores…). A grade se reorganiza com animação, e o filtro fica no link (`/portfolio/#sessions`). Abaixo, os clipes completos do YouTube, que só carregam no play. |
+| **[Som](https://rafascoelho22.github.io/haja-site/som/)** | Player de áudio com forma de onda ([wavesurfer.js](https://wavesurfer.xyz)). Toca uma faixa por vez, e a forma de onda só carrega quando aparece na tela. O botão **Antes/Depois** troca entre a versão crua e a mixada no mesmo ponto da música. |
+| **[Haja Day](https://rafascoelho22.github.io/haja-site/haja-day/)** | Próxima edição com contagem regressiva e link de inscrição (ou lista de espera por e-mail ou WhatsApp, enquanto não há data) e a lista das edições com os reels de cada uma. |
+| **[Agendar](https://rafascoelho22.github.io/haja-site/agendar/)** | Agenda do [Cal.com](https://cal.com) dentro do site, quando configurada, carregada só ao clicar em "Ver horários". Sem ela, um formulário curto monta a mensagem e abre o WhatsApp. |
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
 
@@ -100,10 +102,12 @@ npm run dev
 
 | No painel | O que muda no site |
 |---|---|
-| **Reels** | Título, legenda, categoria, capa vertical (9:16), código do reel no Instagram, data e se aparece na página inicial. |
-| **Faixas de áudio** | Título, artista, descrição e arquivo (mp3, wav ou flac). Desmarque "Faixa de demonstração" ao subir uma produção real. |
+| **Reels** | Título, artista, legenda, categoria, capa vertical (9:16), código do reel no Instagram, data e se aparece na página inicial. |
+| **Clipes no YouTube** | Título, artista, código do vídeo, tipo (clipe ou ao vivo) e data. Aparecem no fim do portfólio. |
+| **Artistas atendidos** | Nome, Instagram, link de um trabalho e ordem. Formam o letreiro da página inicial. |
+| **Faixas de áudio** | Título, artista, descrição, arquivo (mp3, wav ou flac) e, opcionalmente, a versão antes da mixagem. Desmarque "Faixa de demonstração" ao subir uma produção real. |
 | **Edições do Haja Day** | Número, data, resumo e os reels da edição. |
-| **Configurações do site** | WhatsApp, Instagram, agenda do Cal.com, próximo Haja Day e métricas. |
+| **Configurações do site** | WhatsApp, Instagram (Brasil e Global), canal do YouTube, lista de espera, agenda do Cal.com, próximo Haja Day e métricas. |
 
 Depois de salvar no painel, faça commit e push. O GitHub Actions publica o site sozinho em cerca de um minuto.
 
@@ -117,6 +121,7 @@ Tudo em **Configurações do site**, no painel (arquivo `src/content/site.yaml`)
 
 - **Agenda (Cal.com):** crie uma conta gratuita em cal.com, um tipo de evento (por exemplo, "Gravação no estúdio") e cole o link curto, como `haja-producoes/estudio`. A página Agendar passa a mostrar a agenda. Com o campo vazio, ela usa o formulário pelo WhatsApp.
 - **Próximo Haja Day:** com data e hora futuras, a página mostra a contagem regressiva. O link de inscrição pode ser um Google Forms ou um Tally. Sem data, aparece "Data em breve".
+- **Lista de espera do Haja Day:** crie uma conta gratuita no [Buttondown](https://buttondown.com) e informe o usuário. A página passa a ter um campo de e-mail (sem script de terceiros). Vazio, o aviso é só pelo WhatsApp.
 - **Métricas:** escolha **Plausible** (informe o domínio do site) ou **Umami** (informe o Website ID). As duas respeitam a privacidade e dispensam aviso de cookies. Os cliques em links externos, como o WhatsApp, também entram na contagem.
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
@@ -147,7 +152,8 @@ flowchart LR
 |---|---|---|
 | **FigCraft** | `figcraft/gerar.sh`, `banner.sh`, `og.sh` | Design desktop e mobile, design system, banner deste README e a imagem de compartilhamento 1200×630. |
 | **PhotoCraft** | `scripts/melhorar-reels.sh` | Ampliou as capas de 360×640 para 720×1280 e aplicou *smart sharpen* com redução de ruído. Também cortou as capturas de celular deste README. |
-| **SoundCraft** | `som/gerar-demo.sh` | Compôs e mixou a faixa de demonstração do player (pad, arpejo, baixo e batida, 80 BPM) e exportou em FLAC normalizado. |
+| **SoundCraft** | `som/gerar-demo.sh` | Compôs e mixou a faixa de demonstração do player (pad, arpejo, baixo e batida, 80 BPM) e exportou em FLAC normalizado. Com `ANTES=1`, gera a versão crua (sem reverb, delay nem masterização) usada no botão Antes/Depois. |
+| **Node** | `scripts/gerar-grao.mjs` | Gera a textura de granulado de filme (PNG de 10 KB que se repete), aplicada como imagem fixa em vez de filtro ao vivo. |
 | **Astro** | `src/` | Páginas, componentes, otimização de imagem e sitemap. |
 | **Keystatic** | `keystatic.config.ts` | Painel de conteúdo. Só roda no `npm run dev`, então o site publicado continua 100% estático. |
 
@@ -160,9 +166,9 @@ haja-site/
 ├── src/
 │   ├── pages/              # index, portfolio, som, haja-day, agendar, 404
 │   ├── layouts/Base.astro  # <head> com SEO, menu, rodapé, WhatsApp flutuante
-│   ├── components/         # Reel, FundoLogo, Icones
+│   ├── components/         # Reel, YouTube, FundoLogo, Icones
 │   ├── content/            # conteúdo editado pelo Keystatic (YAML)
-│   │   ├── reels/  faixas/  edicoes/
+│   │   ├── reels/  clipes/  artistas/  faixas/  edicoes/
 │   │   └── site.yaml       # configurações
 │   ├── assets/reels/       # capas (otimizadas no build)
 │   ├── scripts/            # comportamentos de rolagem e menu
@@ -193,6 +199,8 @@ Para refazer os arquivos da suíte ArtCraft (instalada em `C:\Program Files\ArtC
 cd figcraft && bash gerar.sh && bash banner.sh && bash og.sh && cd ..
 bash scripts/melhorar-reels.sh
 bash som/gerar-demo.sh
+ANTES=1 bash som/gerar-demo.sh
+node scripts/gerar-grao.mjs
 ```
 
 <p align="right"><a href="#topo">voltar ao topo ↑</a></p>
@@ -209,8 +217,13 @@ bash som/gerar-demo.sh
 - [x] Preparado para domínio próprio
 - [ ] Trocar as capas pelos **vídeos originais**, tocando em loop, e abrir um player estilo Stories ao clicar
 - [ ] Subir as **produções musicais reais** no lugar da faixa de demonstração
-- [ ] Rolagem com inércia (Lenis) e animações com GSAP ScrollTrigger
+- [x] Artistas atendidos, clipes do YouTube e histórico das edições do Haja Day
+- [x] Comparação Antes/Depois no player de áudio
+- [ ] Orçamento guiado em etapas, pacotes com preço "a partir de" e páginas de caso com depoimento
+- [ ] SEO local: Perfil da Empresa no Google, `LocalBusiness` e uma página por edição do Haja Day
 - [ ] Depoimentos de artistas e ministérios
+
+> Rolagem com inércia (Lenis) foi avaliada e descartada: troca a rolagem nativa por um laço em JS a cada quadro e iria contra o trabalho de deixar a rolagem leve.
 
 ## Créditos e direitos
 

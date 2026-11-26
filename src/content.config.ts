@@ -10,6 +10,7 @@ const reels = defineCollection({
   schema: ({ image }) =>
     z.object({
       titulo: z.string(),
+      artista: z.string().default(''),
       legenda: z.string().default(''),
       categoria,
       capa: image(),
@@ -26,6 +27,7 @@ const faixas = defineCollection({
     artista: z.string().default(''),
     descricao: z.string().default(''),
     audio: z.string().nullish(),
+    audioAntes: z.string().nullish(),
     demonstracao: z.boolean().default(false),
     ordem: z.number().default(0),
   }),
@@ -48,6 +50,9 @@ const site = defineCollection({
     whatsapp: z.string(),
     whatsappExibicao: z.string(),
     instagram: z.string(),
+    instagramGlobal: z.string().nullish(),
+    youtube: z.string().nullish(),
+    buttondown: z.string().nullish(),
     calLink: z.string().nullish(),
     proximoHajaDay: z
       .object({
@@ -66,5 +71,25 @@ const site = defineCollection({
   }),
 });
 
+const artistas = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/artistas' }),
+  schema: z.object({
+    nome: z.string(),
+    instagram: z.string().nullish(),
+    link: z.string().nullish(),
+    ordem: z.number().default(0),
+  }),
+});
 
-export const collections = { reels, faixas, edicoes, site };
+const clipes = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/clipes' }),
+  schema: z.object({
+    titulo: z.string(),
+    artista: z.string().default(''),
+    youtube: z.string().regex(/^[\w-]{11}$/, 'O código do YouTube tem 11 caracteres'),
+    tipo: z.enum(['clipe', 'ao-vivo']).default('clipe'),
+    data: z.coerce.date().nullish(),
+  }),
+});
+
+export const collections = { reels, faixas, edicoes, artistas, clipes, site };

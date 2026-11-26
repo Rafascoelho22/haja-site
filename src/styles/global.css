@@ -2,8 +2,8 @@
 :root{
   --preto:#0A0A0A; --grafite:#1D1D1F; --laranja:#FF5A1F; --laranja-escuro:#E04A12;
   --branco:#FFFFFF; --cinza:#F5F5F7; --texto-suave:#6E6E73; --texto-suave-escuro:#A1A1A6;
-  --display:"Montserrat","Arial Black",system-ui,sans-serif;
-  --corpo:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:var(--fonte-display),"Montserrat","Arial Black",system-ui,sans-serif;
+  --corpo:var(--fonte-corpo),"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   --gutter-l:max(20px, env(safe-area-inset-left, 0px));
   --gutter-r:max(20px, env(safe-area-inset-right, 0px));
   --ease:cubic-bezier(.22,.8,.24,1);

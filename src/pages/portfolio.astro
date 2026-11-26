@@ -2,12 +2,15 @@
 import Base from '../layouts/Base.astro';
 import Reel from '../components/Reel.astro';
 import FundoLogo from '../components/FundoLogo.astro';
+import YouTube from '../components/YouTube.astro';
+import { getCollection } from 'astro:content';
 import { CATEGORIAS, getReels, getSite } from '../lib/site';
 
 const site = await getSite();
 const reels = await getReels();
 const contagem = Object.fromEntries(Object.keys(CATEGORIAS).map((c) => [c, reels.filter((r) => r.data.categoria === c).length]));
 const filtros = Object.entries(CATEGORIAS).filter(([c]) => contagem[c] > 0);
+const clipes = (await getCollection('clipes')).sort((a, b) => (b.data.data?.getTime() ?? 0) - (a.data.data?.getTime() ?? 0));
 const mes = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 <Base titulo="Portfólio" descricao="Louvor ao vivo, sessions acústicas, bastidores, entrevistas e conteúdo para redes produzidos pela Haja Produções." navClara>
@@ -17,7 +20,7 @@ const mes = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric', 
       <header class="cab-pagina">
         <p class="eyebrow">Portfólio</p>
         <h1>Tudo o que já saiu do nosso estúdio.</h1>
-        <p class="lead">Escolha um tipo de produção. Cada reel abre no Instagram.</p>
+        <p class="lead">Escolha um tipo de produção. Cada reel abre no Instagram, e os clipes completos tocam aqui mesmo, mais abaixo.</p>
       </header>
 
       <div class="filtros" role="toolbar" aria-label="Filtrar por tipo de produção">
@@ -34,6 +37,7 @@ const mes = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric', 
             <Reel reel={r} instagram={site.instagram} sizes="(max-width: 560px) 46vw, (max-width: 1100px) 30vw, 280px" />
             <div class="ficha">
               <strong>{r.data.titulo}</strong>
+              {r.data.artista && <span class="ficha-artista">{r.data.artista}</span>}
               <span>{CATEGORIAS[r.data.categoria]}{r.data.data && ` · ${mes.format(r.data.data)}`}</span>
             </div>
           </li>
@@ -41,6 +45,30 @@ const mes = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric', 
       </ul>
     </div>
   </section>
+
+  {clipes.length > 0 && (
+    <section class="pagina-escura clipes" id="clipes">
+      <div class="wrap">
+        <header class="cab-pagina">
+          <p class="eyebrow">Clipes completos</p>
+          <h2>Do começo ao fim, em alta.</h2>
+          <p class="lead">Clipes oficiais e gravações ao vivo do nosso canal. O vídeo só carrega quando você dá o play.</p>
+        </header>
+        <ul class="grade-clipes">
+          {clipes.map((c) => (
+            <li class="rv">
+              <YouTube id={c.data.youtube} titulo={`${c.data.titulo}, ${c.data.artista}`} />
+              <div class="ficha">
+                <strong>{c.data.titulo}</strong>
+                <span>{c.data.artista} · {c.data.tipo === 'ao-vivo' ? 'Ao vivo' : 'Clipe oficial'}{c.data.data && ` · ${mes.format(c.data.data)}`}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+        {site.youtube && <a class="btn btn-link canal" href={`https://www.youtube.com/@${site.youtube}`} target="_blank" rel="noopener">Ver o canal no YouTube ›</a>}
+      </div>
+    </section>
+  )}
 </Base>
 
 <script>

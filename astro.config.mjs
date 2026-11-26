@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import node from '@astrojs/node';
@@ -20,4 +20,9 @@ export default defineConfig({
   integrations: [sitemap(), ...(dev ? [react(), keystatic()] : [])],
   ...(dev ? { adapter: node({ mode: 'standalone' }) } : {}),
   image: { responsiveStyles: true },
+  // fontes baixadas no build e servidas pelo próprio site (sem esperar o Google Fonts)
+  fonts: [
+    { provider: fontProviders.google(), name: 'Montserrat', cssVariable: '--fonte-display', weights: [600, 800, 900], subsets: ['latin'], fallbacks: ['Arial Black', 'sans-serif'] },
+    { provider: fontProviders.google(), name: 'Inter', cssVariable: '--fonte-corpo', weights: [400, 500, 600], subsets: ['latin'], fallbacks: ['system-ui', 'sans-serif'] },
+  ],
 });

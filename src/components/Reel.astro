@@ -11,14 +11,15 @@ interface Props {
   instagram: string;
 }
 const { reel, class: classe = '', eager = false, sizes = '(max-width: 560px) 60vw, 300px', instagram } = Astro.props;
-const { titulo, legenda, capa, instagram: codigo } = reel.data;
+const { titulo, artista, legenda, capa, instagram: codigo } = reel.data;
+const nome = artista ? `${titulo} · ${artista}` : titulo;
 ---
 <a
   class={`reel ${classe}`}
   href={`https://www.instagram.com/${instagram}/reel/${codigo}/`}
   target="_blank"
   rel="noopener"
-  aria-label={`Assistir no Instagram: ${titulo}`}
+  aria-label={`Assistir no Instagram: ${nome}`}
   data-categoria={reel.data.categoria}
 >
   <Image
@@ -34,7 +35,7 @@ const { titulo, legenda, capa, instagram: codigo } = reel.data;
   <span class="reel-play"><svg viewBox="0 0 24 24"><use href="#i-play" /></svg></span>
   <span class="reel-acoes"><svg><use href="#i-coracao" /></svg><svg><use href="#i-coment" /></svg><svg><use href="#i-envia" /></svg></span>
   <span class="reel-base">
-    <span class="reel-perfil"><img src={url('img/perfil.jpg')} alt="" width="26" height="26" loading="lazy" />{instagram}</span>
-    <span class="reel-legenda">{legenda || titulo}</span>
+    <span class="reel-perfil"><img src={url('img/perfil.jpg')} alt="" width="26" height="26" loading="lazy" /><span>{instagram}</span></span>
+    <span class="reel-legenda">{artista ? <><b>{titulo}</b> · {artista}</> : legenda || titulo}</span>
   </span>
 </a>

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Faixa de DEMONSTRAÇÃO para o player de áudio do site (não é uma produção da Haja).
 # Pad + arpejo + baixo + batida leve, C–G–Am–F, 80 BPM, ~29 s. Feita no SoundCraft.
-# Uso: bash som/gerar-demo.sh   (na raiz do projeto) -> public/audio/faixa-de-demonstracao/audio.wav
+# Uso: bash som/gerar-demo.sh   (na raiz do projeto) -> public/audio/faixa-de-demonstracao/audio.flac
+#      ANTES=1 bash som/gerar-demo.sh -> audio-antes.flac: a mesma faixa crua (sem reverb, delay
+#      nem masterização), para o botão Antes/Depois do player
 set -e
 cd "$(dirname "$0")"
 SC="/c/Program Files/ArtCraft/SoundCraft/soundcraft-cli.exe"
@@ -15,7 +17,7 @@ c() { echo "$1 $2" >> $OUT; }
 # n clip pitch compasso(1..) tick dur vel   (960 ticks por tempo, 3840 por compasso)
 n() { echo "midi.note_add {\"clip\":$1,\"pitch\":$2,\"start_ticks\":$(( ($3-1)*3840 + $4 )),\"length_ticks\":$5,\"velocity\":$6}" >> $OUT; }
 ip() { c mix.instrument_param "{\"track\":\"$1\",\"param\":\"$2\",\"value\":$3}"; }
-ins() { c mix.insert "{\"track\":\"$1\",\"slot\":$2,\"plugin\":\"$3\",\"params\":$4}"; }
+ins() { [ -n "$ANTES" ] && return; c mix.insert "{\"track\":\"$1\",\"slot\":$2,\"plugin\":\"$3\",\"params\":$4}"; }
 
 c session.new "{\"name\":\"Haja demo\",\"sample_rate\":$SR,\"bit_depth\":16}"
 c event.tempo '{"bpm":80}'
@@ -59,14 +61,17 @@ ip Bateria kick_decay 50; ip Bateria hat_decay 25
 c mix.volume '{"tracks":["Bateria"],"db":-6}'
 
 c track.new '{"kind":"master","format":"stereo","name":"Master"}'
-c mix.insert '{"track":9,"slot":0,"plugin":"maximizer","params":{"threshold":-3,"ceiling":-1}}'
+[ -z "$ANTES" ] && c mix.insert '{"track":9,"slot":0,"plugin":"maximizer","params":{"threshold":-3,"ceiling":-1}}'
 au() { c automation.set_point "{\"track\":9,\"param\":\"volume\",\"at\":$(( $1 * SR / 1000 )),\"value\":$2}"; }
 au 0 -30; au 1500 0; au 26000 0; au 29000 -40; au 29500 -144
 
 mkdir -p ../public/audio/faixa-de-demonstracao
-"$SC" script $OUT --bounce ../public/audio/faixa-de-demonstracao/audio.wav --start 0 --end 29.5 --save demo.scraft > demo.log 2>&1 || { tail -5 demo.log; exit 1; }
+NOME=audio; [ -n "$ANTES" ] && NOME=audio-antes
+SESSAO=demo; [ -n "$ANTES" ] && SESSAO=demo-antes
+"$SC" script $OUT --bounce ../public/audio/faixa-de-demonstracao/$NOME.wav --start 0 --end 29.5 --save $SESSAO.scraft > demo.log 2>&1 || { tail -5 demo.log; exit 1; }
 grep -ciE 'error' demo.log || true
 # FLAC 16 bits normalizado: ~3x menor que o WAV e toca em todos os navegadores atuais
 D=../public/audio/faixa-de-demonstracao
-"$SC" convert $D/audio.wav $D/audio.flac --bit-depth 16 --normalize
-rm -f $D/audio.wav demo.cmds
+# a versão crua não é normalizada: fica mais baixa, como sai antes da mixagem
+if [ -n "$ANTES" ]; then "$SC" convert $D/$NOME.wav $D/$NOME.flac --bit-depth 16; else "$SC" convert $D/$NOME.wav $D/$NOME.flac --bit-depth 16 --normalize; fi
+rm -f $D/$NOME.wav demo.cmds

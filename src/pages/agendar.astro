@@ -18,7 +18,10 @@ const tipos = ['Gravação de louvor ao vivo', 'Session acústica', 'Produção 
       </header>
 
       {cal ? (
-        <div class="cal" id="cal" data-cal={cal}></div>
+        <div class="cal" id="cal" data-cal={cal}>
+          <button class="btn btn-laranja" type="button" id="abrirCal">Ver horários disponíveis</button>
+          <p class="nota">A agenda abre aqui mesmo. Ela só carrega quando você pede, para a página continuar leve.</p>
+        </div>
       ) : (
         <form class="pedido" id="pedido" data-whats={site.whatsapp}>
           <fieldset>
@@ -45,9 +48,17 @@ const tipos = ['Gravação de louvor ao vivo', 'Session acústica', 'Produção 
 </Base>
 
 <script>
-  // Cal.com, quando houver um link configurado no painel
+  // Cal.com, quando houver um link configurado no painel. Carrega só no clique:
+  // o embed traz um iframe e scripts pesados que não precisam atrasar a página.
   const cal = document.getElementById('cal');
-  if (cal) {
+  const abrirCal = document.getElementById('abrirCal');
+  // ao passar o mouse, já abre a conexão com o Cal.com para o clique responder mais rápido
+  abrirCal?.addEventListener('pointerenter', () => {
+    const l = Object.assign(document.createElement('link'), { rel: 'preconnect', href: 'https://app.cal.com' });
+    document.head.append(l);
+  }, { once: true });
+  if (cal && abrirCal) abrirCal.addEventListener('click', () => {
+    cal.replaceChildren();
     const link = cal.dataset.cal!;
     (function (C: any, A: string, L: string) {
       const p = (a: any, ar: any) => a.q.push(ar);
@@ -75,7 +86,7 @@ const tipos = ['Gravação de louvor ao vivo', 'Session acústica', 'Produção 
     Cal('init', 'haja', { origin: 'https://cal.com' });
     Cal.ns.haja('inline', { elementOrSelector: '#cal', calLink: link, layout: 'month_view' });
     Cal.ns.haja('ui', { theme: 'light', cssVarsPerTheme: { light: { 'cal-brand': '#FF5A1F' } }, hideEventTypeDetails: false });
-  }
+  });
 
   // Pedido pelo WhatsApp, quando não houver Cal.com
   const form = document.getElementById('pedido') as HTMLFormElement | null;
