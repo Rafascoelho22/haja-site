@@ -1,4 +1,4 @@
-// Comportamentos comuns a todas as páginas: menu do celular, barra de progresso,
+// Comportamentos comuns a todas as páginas: rótulo do menu do celular, barra de progresso,
 // barra clara sobre faixas claras e revelação ao rolar.
 export const reduzMovimento = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -12,19 +12,32 @@ export function iniciarBase() {
   const fixaClara = nav.hasAttribute('data-nav-clara');
 
   // menu do celular
-  const fechar = () => {
-    nav.classList.remove('aberto');
-    botao.setAttribute('aria-expanded', 'false');
-    botao.setAttribute('aria-label', 'Abrir menu');
+  const menu = document.getElementById('menu')!;
+  const rotular = (aberto: boolean) => {
+    botao.setAttribute('aria-expanded', String(aberto));
+    botao.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
   };
-  botao.addEventListener('click', () => {
-    const abre = !nav.classList.contains('aberto');
-    nav.classList.toggle('aberto', abre);
-    botao.setAttribute('aria-expanded', String(abre));
-    botao.setAttribute('aria-label', abre ? 'Fechar menu' : 'Abrir menu');
-  });
-  addEventListener('keydown', (e) => e.key === 'Escape' && fechar());
-  nav.querySelectorAll('.links a').forEach((a) => a.addEventListener('click', fechar));
+  if ('popover' in HTMLElement.prototype) {
+    // popover nativo: o botão abre e fecha pelo HTML (commandfor/popovertarget), e Esc e o toque fora
+    // fecham sozinhos. O JS só acerta o rótulo do botão e fecha o menu ao escolher um link.
+    const fechar = () => menu.matches(':popover-open') && menu.hidePopover();
+    menu.addEventListener('toggle', (e) => rotular((e as ToggleEvent).newState === 'open'));
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', fechar));
+    matchMedia('(min-width:861px)').addEventListener('change', (e) => e.matches && fechar());
+  } else {
+    // reserva para navegador sem popover: o mesmo menu, aberto por uma classe
+    const fechar = () => {
+      nav.classList.remove('aberto');
+      rotular(false);
+    };
+    botao.addEventListener('click', () => {
+      const abre = !nav.classList.contains('aberto');
+      nav.classList.toggle('aberto', abre);
+      rotular(abre);
+    });
+    addEventListener('keydown', (e) => e.key === 'Escape' && fechar());
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', fechar));
+  }
 
   // revelar ao rolar: só o que começa abaixo da dobra fica escondido
   if (!reduzMovimento() && !cssPelaRolagem()) {

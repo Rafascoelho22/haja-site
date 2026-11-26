@@ -92,14 +92,26 @@ const edicoes = await Promise.all(
   if (alvo) {
     const campos = Object.fromEntries([...caixa.querySelectorAll<HTMLElement>('[data-u]')].map((el) => [el.dataset.u, el]));
     const pad = (n: number) => String(n).padStart(2, '0');
+    // só escreve o campo que mudou: a cada segundo o navegador redesenha um número, e não os quatro
+    const por = (u: string, v: string) => {
+      if (campos[u].textContent !== v) campos[u].textContent = v;
+    };
     const tique = () => {
       const falta = Math.max(0, alvo - Date.now()) / 1000;
-      campos.d.textContent = String(Math.floor(falta / 86400));
-      campos.h.textContent = pad(Math.floor((falta % 86400) / 3600));
-      campos.m.textContent = pad(Math.floor((falta % 3600) / 60));
-      campos.s.textContent = pad(Math.floor(falta % 60));
+      por('d', String(Math.floor(falta / 86400)));
+      por('h', pad(Math.floor((falta % 86400) / 3600)));
+      por('m', pad(Math.floor((falta % 3600) / 60)));
+      por('s', pad(Math.floor(falta % 60)));
     };
-    tique();
-    setInterval(tique, 1000);
+    // o relógio para com a aba escondida (e enquanto a página é pré-carregada) e acerta a hora ao voltar
+    let relogio = 0;
+    const ligar = () => {
+      clearInterval(relogio);
+      if (document.hidden) return;
+      tique();
+      relogio = window.setInterval(tique, 1000);
+    };
+    document.addEventListener('visibilitychange', ligar);
+    ligar();
   }
 </script>

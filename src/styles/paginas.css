@@ -1,15 +1,21 @@
-/* ===== Transições entre páginas (nativas do navegador) ===== */
+/* ===== Transições entre páginas (nativas do navegador) =====
+   Só a página nova aparece por cima da antiga, em 260ms, e nada mais é animado:
+   - o "grupo" da raiz não anima (ele animava largura e altura e fazia o navegador recalcular os estilos a cada quadro);
+   - a barra não tem mais nome próprio: é igual nas duas páginas, e capturá-la em separado custava uma camada a mais;
+   - a página antiga não some antes da hora, então não há piscada escura entre uma e outra. */
 @view-transition { navigation: auto; }
-.nav { view-transition-name: nav; }
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+::view-transition-group(root) { animation: none; }
+::view-transition-image-pair(root) { isolation: auto; }
+::view-transition-old(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: vt-entra .26s var(--ease) both; mix-blend-mode: normal; }
+@keyframes vt-entra { from { opacity: 0; } }
 
 /* ===== Acessibilidade ===== */
-.pular { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--laranja); color: var(--branco); padding: 10px 16px; border-radius: 999px; font-weight: 600; text-decoration: none; }
+.pular { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--laranja-aa); color: var(--branco); padding: 10px 16px; border-radius: 999px; font-weight: 600; text-decoration: none; }
 .pular:focus { top: calc(env(safe-area-inset-top, 0px) + 10px); }
 
 /* ===== Barra de navegação ===== */
-.nav .links a[aria-current="page"] { opacity: 1; color: var(--laranja); }
-.nav.claro .links a[aria-current="page"] { color: var(--laranja); }
+.nav .links a[aria-current="page"], .nav.claro .links a[aria-current="page"] { opacity: 1; color: var(--acento-texto); }
 .cta-nav { margin-left: 8px; }
 .menu-botao { display: none; background: none; border: 0; color: var(--branco); width: 40px; height: 40px; padding: 8px; cursor: pointer; border-radius: 10px; }
 .menu-botao svg { width: 24px; height: 24px; }
@@ -25,12 +31,14 @@ a.card { text-decoration: none; color: var(--grafite); }
 .rodape-site .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; }
 .rodape-site ul { display: flex; flex-wrap: wrap; gap: 8px 22px; list-style: none; padding: 0; margin: 0; }
 .rodape-site a { text-decoration: none; }
+.rodape-site ul a { display: inline-block; padding-block: 4px; }
 .rodape-site ul a:hover { color: var(--branco); }
 .rodape-site p { margin-left: auto; }
 
 /* ===== WhatsApp flutuante ===== */
-.whats-flutuante { position: fixed; z-index: 40; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 56px; height: 56px; border-radius: 50%; background: var(--laranja); color: var(--branco); display: grid; place-items: center; box-shadow: 0 12px 30px -8px rgba(255, 90, 31, .6); transition: transform .3s var(--ease); }
-@media (hover: hover) { .whats-flutuante:hover { transform: scale(1.08); } }
+.whats-flutuante { position: fixed; z-index: 40; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 56px; height: 56px; border-radius: 50%; background: var(--laranja); color: var(--branco); display: grid; place-items: center; box-shadow: 0 12px 30px -8px rgba(255, 90, 31, .6); box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--laranja) 60%, transparent); transition: transform .18s var(--ease), background-color .18s var(--ease); }
+@media (hover: hover) { .whats-flutuante:hover { background: var(--laranja-aa); } }
+.whats-flutuante:active { transform: scale(.95); }
 .whats-flutuante svg { width: 28px; height: 28px; }
 
 /* ===== Estrutura das páginas internas ===== */
@@ -39,6 +47,11 @@ a.card { text-decoration: none; color: var(--grafite); }
 .pagina-escura { background: var(--preto); color: var(--branco); padding-block: clamp(56px, 8vw, 110px) clamp(80px, 10vw, 140px); }
 .cab-pagina { max-width: 820px; margin-bottom: clamp(32px, 5vw, 56px); }
 .cab-pagina h1 { font-size: clamp(40px, 6.4vw, 88px); margin-top: 14px; }
+/* com o corte tipográfico (text-box, em global.css) a sobra da linha some: a margem passa a dar todo o respiro,
+   inclusive o espaço para o cedilha e o "j" que descem abaixo da linha de base */
+@supports (text-box: trim-both cap alphabetic) {
+  main .cab-pagina h1, main .day-topo h1 { margin-top: 22px; padding-bottom: .16em; }
+}
 .lead { margin-top: 20px; font-size: clamp(17px, 1.7vw, 21px); color: var(--texto-suave); max-width: 52ch; }
 .pagina-escura .lead { color: var(--texto-suave-escuro); }
 
@@ -55,15 +68,20 @@ a.card { text-decoration: none; color: var(--grafite); }
 .ficha { display: grid; gap: 2px; margin-top: 12px; }
 .ficha strong { font: 800 16px/1.25 var(--display); letter-spacing: -.01em; }
 .ficha span { font-size: 13px; color: var(--texto-suave); }
-::view-transition-group(*) { animation-duration: .45s; animation-timing-function: var(--ease); }
-::view-transition-old(*):only-child { animation-duration: .18s; }
+/* filtro do portfólio: cada reel tem um nome próprio só enquanto a grade se reorganiza (ver portfolio.astro).
+      Os cartões deslizam em 400ms; quem sai some em 150ms, mais discreto que quem entra (250ms). */
+::view-transition-group(*) { animation-duration: .4s; animation-timing-function: var(--ease); }
+::view-transition-group(root) { animation: none; }
+::view-transition-old(*):only-child { animation-duration: .15s; animation-timing-function: var(--ease-sai); }
+::view-transition-new(*):only-child { animation-duration: .25s; animation-timing-function: var(--ease); }
 
 /* ===== Som ===== */
 .faixas { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
 .faixa { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px 22px; align-items: center; padding: 22px; border-radius: 24px; background: #141416; border: 1px solid #222225; transition: border-color .3s; }
 .faixa.tocando { border-color: var(--laranja); }
-.faixa-play { width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--laranja); color: var(--branco); display: grid; place-items: center; cursor: pointer; transition: transform .25s var(--ease); }
-@media (hover: hover) { .faixa-play:hover { transform: scale(1.06); } }
+.faixa-play { width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--laranja); color: var(--branco); display: grid; place-items: center; cursor: pointer; transition: transform .18s var(--ease), background-color .18s var(--ease); }
+@media (hover: hover) { .faixa-play:not(:disabled):hover { background: var(--laranja-aa); } }
+.faixa-play:not(:disabled):active { transform: scale(.95); }
 .faixa-play:disabled { background: #3A3A3C; cursor: not-allowed; }
 .faixa-play svg { width: 22px; height: 22px; }
 .faixa-play .i-play { margin-left: 3px; }
@@ -71,7 +89,7 @@ a.card { text-decoration: none; color: var(--grafite); }
 .faixa.tocando .faixa-play .i-pausa { display: block; }
 .faixa-titulo { font: 800 clamp(18px, 2vw, 22px)/1.2 var(--display); letter-spacing: -.01em; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
 .faixa-num { color: var(--laranja); font: 600 13px/1 var(--corpo); font-variant-numeric: tabular-nums; }
-.selo { font: 600 11px/1 var(--corpo); letter-spacing: .08em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; background: rgba(255, 90, 31, .14); color: var(--laranja); }
+.selo { font: 600 11px/1 var(--corpo); letter-spacing: .08em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; background: rgba(255, 90, 31, .14); background: color-mix(in srgb, var(--laranja) 14%, transparent); color: var(--laranja); }
 .faixa-artista { color: var(--texto-suave-escuro); font-size: 14px; margin-top: 4px; }
 .onda { margin-top: 14px; min-height: 56px; cursor: pointer; }
 .faixa-desc { margin-top: 10px; font-size: 14px; color: #8E8E93; max-width: 70ch; }
@@ -85,12 +103,14 @@ a.card { text-decoration: none; color: var(--grafite); }
 .day-topo .eyebrow { color: var(--preto); }
 .day-topo h1 { font-size: clamp(46px, 8vw, 112px); margin-top: 16px; }
 .day-topo h1 span { color: var(--preto); }
-.day-topo .lead { color: #FFF4EE; }
+/* preto sobre o laranja: 6,3:1 (o branco dava 3,1:1, abaixo do mínimo para texto corrido) */
+.day-topo .lead { color: var(--preto); }
 .proximo { margin-top: clamp(36px, 5vw, 56px); background: rgba(10, 10, 10, .9); border-radius: 28px; padding: clamp(24px, 3.5vw, 40px); max-width: 720px; color: var(--branco); }
 .proximo-rotulo { font: 600 13px/1 var(--corpo); letter-spacing: .14em; text-transform: uppercase; color: var(--laranja); }
 .proximo-data { font: 800 clamp(22px, 2.8vw, 32px)/1.2 var(--display); margin-top: 10px; letter-spacing: -.01em; }
 .proximo-nota { margin-top: 10px; color: var(--texto-suave-escuro); }
-.proximo .btn { margin-top: 24px; background: var(--laranja); }
+.proximo .btn { margin-top: 24px; background: var(--laranja-aa); }
+.proximo .btn:hover { background: var(--laranja-escuro); }
 .contagem { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 22px; max-width: 460px; }
 .contagem div { background: #1C1C1E; border-radius: 16px; padding: 14px 8px; text-align: center; }
 .contagem span { display: block; font: 900 clamp(26px, 3.6vw, 40px)/1 var(--display); font-variant-numeric: tabular-nums; }
@@ -111,7 +131,7 @@ a.card { text-decoration: none; color: var(--grafite); }
 .opcoes { display: flex; flex-wrap: wrap; gap: 10px; }
 .opcao input { position: absolute; opacity: 0; pointer-events: none; }
 .opcao span { display: inline-block; padding: 11px 16px; border-radius: 999px; border: 1px solid #D2D2D7; font-weight: 500; font-size: 15px; cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
-.opcao input:checked + span { background: var(--laranja); border-color: var(--laranja); color: var(--branco); }
+.opcao input:checked + span { background: var(--laranja-aa); border-color: var(--laranja-aa); color: var(--branco); }
 .opcao input:focus-visible + span { outline: 3px solid var(--laranja); outline-offset: 3px; }
 .campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .campos label { display: grid; gap: 8px; font-weight: 600; font-size: 14px; }
@@ -135,8 +155,9 @@ a.card { text-decoration: none; color: var(--grafite); }
   .cta-nav { display: none; }
   .nav .wrap { justify-content: space-between; }
   .nav nav { position: absolute; left: 0; right: 0; top: 100%; }
-  .nav .links { display: none; flex-direction: column; gap: 0; margin: 0; padding: 8px var(--gutter-r) 20px var(--gutter-l); background: rgba(10, 10, 10, .96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, .08); }
-  .nav.claro .links { background: rgba(255, 255, 255, .97); }
+  /* fundo opaco, sem desfoque ao vivo (no celular o desfoque seria refeito a cada quadro) */
+  .nav .links { display: none; flex-direction: column; gap: 0; margin: 0; padding: 8px var(--gutter-r) 20px var(--gutter-l); background: var(--preto); border-bottom: 1px solid rgba(255, 255, 255, .08); }
+  .nav.claro .links { background: var(--branco); }
   .nav.aberto .links { display: flex; }
   .nav .links a { display: block; padding: 14px 4px; font-size: 20px; font-weight: 600; opacity: 1; border-bottom: 1px solid rgba(128, 128, 128, .18); text-align: center; }
   .cab-pagina { text-align: center; margin-inline: auto; }
@@ -163,6 +184,24 @@ a.card { text-decoration: none; color: var(--grafite); }
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
 }
+
+/* ===== Menu do celular como popover nativo =====
+   O botão abre a lista com commandfor/popovertarget, sem JS: Esc e o toque fora fecham sozinhos.
+   Entra em 240ms descendo 10px e sai em 140ms subindo 4px (@starting-style + allow-discrete).
+   Navegador sem popover: vale o menu por classe (.aberto) de base.ts, sem animação. */
+@supports selector(:popover-open) {
+  @media (max-width: 860px) {
+    .nav .links[popover] { position: fixed; inset: calc(env(safe-area-inset-top, 0px) + var(--nav-alt) + 1px) 0 auto 0; max-height: calc(100dvh - var(--nav-alt) - env(safe-area-inset-top, 0px)); overflow-y: auto; opacity: 0; translate: 0 -4px; }
+    .nav .links:popover-open { display: flex; opacity: 1; translate: 0 0; }
+    .nav:has(.links:popover-open) .menu-botao .abrir { display: none; }
+    .nav:has(.links:popover-open) .menu-botao .fechar { display: block; }
+    @media (prefers-reduced-motion: no-preference) {
+      .nav .links[popover] { transition: opacity .14s var(--ease-sai), translate .14s var(--ease-sai), display .14s allow-discrete, overlay .14s allow-discrete; }
+      .nav .links:popover-open { transition: opacity .24s var(--ease), translate .24s var(--ease), display .24s allow-discrete, overlay .24s allow-discrete; }
+      @starting-style { .nav .links:popover-open { opacity: 0; translate: 0 -10px; } }
+    }
+  }
+}
 .nav nav{margin-left:auto}
 
 /* ===== Granulado de filme: imagem fixa que se repete, sem filtro ao vivo ===== */
@@ -181,8 +220,10 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-event
 @keyframes rv-entra { from { opacity: 0; translate: 0 40px; } to { opacity: 1; translate: none; } }
 @keyframes progresso { to { transform: scaleX(1); } }
 
-/* ===== Seções abaixo da dobra: o navegador só as desenha quando chegam perto da tela ===== */
-.artistas, .servicos, .contato, .rodape-site, .clipes, .edicoes { content-visibility: auto; contain-intrinsic-size: auto 900px; }
+/* ===== Seções abaixo da dobra: o navegador só as desenha quando chegam perto da tela =====
+   As edições do Haja Day ficaram de fora: começam logo na dobra, então o navegador montava a página
+   duas vezes no primeiro quadro (uma sem a seção e outra com ela). */
+.artistas, .servicos, .contato, .rodape-site, .clipes { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 
 /* ===== Reels: texto que não transborda ===== */
 .reel-perfil { min-width: 0; }
@@ -195,7 +236,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-event
   .leque .reel-topo svg { width: 16px; height: 16px; }
 }
 
-.manifesto .apoio a { color: var(--laranja); font-weight: 600; text-decoration: none; }
+.manifesto .apoio a { color: var(--acento-texto); font-weight: 600; text-decoration: none; }
 
 /* ===== Artistas: números e letreiro ===== */
 .artistas { background: var(--preto); color: var(--branco); padding-block: clamp(80px, 10vw, 140px); overflow: clip; }
@@ -256,7 +297,7 @@ body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-event
 /* ===== Som: Antes/Depois ===== */
 .ab { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
 .ab button { font: 600 13px/1 var(--corpo); padding: 8px 14px; border-radius: 999px; border: 1px solid #3A3A3C; background: transparent; color: var(--texto-suave-escuro); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
-.ab button[aria-pressed="true"] { background: var(--laranja); border-color: var(--laranja); color: var(--branco); }
+.ab button[aria-pressed="true"] { background: var(--laranja-aa); border-color: var(--laranja-aa); color: var(--branco); }
 .ab-nota { font-size: 12px; color: #8E8E93; margin-left: 6px; }
 
 /* ===== Agendar: a agenda do Cal.com abre só no clique ===== */

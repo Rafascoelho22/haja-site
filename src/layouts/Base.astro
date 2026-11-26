@@ -60,6 +60,20 @@ const organizacao = {
 };
 
 const { analytics } = site;
+
+const especulacao = {
+  prerender: [
+    {
+      where: {
+        and: [
+          { href_matches: url('*') },
+          { not: { selector_matches: '[target=_blank], [download], [href^="#"], [aria-current=page]' } },
+        ],
+      },
+      eagerness: 'moderate',
+    },
+  ],
+};
 ---
 <!doctype html>
 <html lang="pt-BR">
@@ -89,6 +103,10 @@ const { analytics } = site;
 
     <script type="application/ld+json" set:html={JSON.stringify(organizacao)} />
 
+    {/* Speculation Rules: no Chrome e no Edge, a página interna é montada em segundo plano quando o mouse
+        para sobre o link (ou quando o dedo encosta nele). No clique ela já está pronta. Os outros navegadores ignoram. */}
+    {import.meta.env.PROD && <script type="speculationrules" is:inline set:html={JSON.stringify(especulacao)} />}
+
     {analytics.provedor === 'plausible' && analytics.id && (
       <script is:inline defer data-domain={analytics.id} src="https://plausible.io/js/script.outbound-links.js"></script>
     )}
@@ -106,14 +124,15 @@ const { analytics } = site;
           <svg viewBox="0 0 92 60" style="color:var(--laranja)"><use href="#chev" /></svg>HAJA
         </a>
         <nav aria-label="Principal">
-          <ul class="links" id="menu">
+          <ul class="links" id="menu" popover>
             {links.map((l) => (
               <li><a href={url(l.href)} aria-current={ativo(l.href) ? 'page' : undefined}>{l.texto}</a></li>
             ))}
           </ul>
         </nav>
         <a class="btn btn-laranja cta-nav" href={whatsapp(site.whatsapp, 'Olá, Haja! Vim pelo site e quero falar sobre um projeto.')} target="_blank" rel="noopener">Fale conosco</a>
-        <button class="menu-botao" id="menuBotao" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu">
+        {/* commandfor/command abrem o popover sem JS; popovertarget cobre o navegador que ainda não tem commandfor */}
+        <button class="menu-botao" id="menuBotao" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menu" {...{ commandfor: 'menu', command: 'toggle-popover', popovertarget: 'menu' }}>
           <svg class="abrir"><use href="#i-menu" /></svg><svg class="fechar"><use href="#i-fechar" /></svg>
         </button>
       </div>
