@@ -38,10 +38,10 @@ export function iniciarBase() {
         }),
       { threshold: 0.12 },
     );
-    document.querySelectorAll<HTMLElement>('.rv').forEach((el, i) => {
+    document.querySelectorAll<HTMLElement>('.rv').forEach((el) => {
       if (el.getBoundingClientRect().top > innerHeight) {
         el.classList.add('pre');
-        if (el.dataset.atraso !== undefined) el.style.transitionDelay = `${(i % 3) * 90}ms`;
+        if (el.dataset.atraso !== undefined) el.style.transitionDelay = `${([...el.parentElement!.children].indexOf(el) % 3) * 90}ms`;
         io.observe(el);
       }
     });

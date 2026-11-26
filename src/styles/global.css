@@ -155,6 +155,9 @@ p{margin:0}
 
 /* ---------- revelar ao rolar ---------- */
 .rv{transition:opacity 1s var(--ease),transform 1s var(--ease)}
+/* revelados que também têm hover: a lista de transições precisa incluir as duas coisas */
+.card.rv{transition:opacity 1s var(--ease),transform .5s var(--ease),background .4s,color .4s}
+.faixa.rv{transition:opacity 1s var(--ease),transform 1s var(--ease),border-color .3s}
 .rv.pre{opacity:0;transform:translateY(40px)}
 
 /* ---------- responsivo ---------- */
